@@ -56,11 +56,11 @@ Hash tables themselves don't really need defending: almost all dynamically typed
 There is no mandated support for thread safety, immutability, or weakness, though there are portable hooks for specifying these features.
 </p>
 <p>
-This specification accepts separate equality predicates and hash functions for backward compatibility, but strongly encourages the use of <a href="http://srfi.schemers.org/srfi-114/srfi-114.html">SRFI 114</a> comparators, which package a type test, an equality predicate, and a hash function into a single bundle.
+This specification accepts separate equality predicates and hash functions for backward compatibility, but strongly encourages the use of <a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a> comparators, which package a type test, an equality predicate, and a hash function into a single bundle.
 </p>
 <h3 id="SRFI69compatibility">SRFI 69 compatibility</h3>
 <p>
-This SRFI is downward compatible with SRFI 69.  Some procedures have been given new preferred names for compatibility with other SRFIs, but in all cases the SRFI 69 names have been retained as synonyms.  They appear in this SRFI in <small>small print</small>.
+This SRFI is downward compatible with SRFI 69.  Some procedures have been given new preferred names for compatibility with other SRFIs, but in all cases the SRFI 69 names have been retained as synonyms.  They appear in this SRFI <s>struck out</s>.
 There is one exception: the reflective procedure <code>hash-table-hash-function</code> may return <code>#f</code>, which is not permitted by SRFI 69.  See the specification for details.</p>
 <h3 id="R6RScompatibility">R6RS compatibility</h3>
 <p>
@@ -138,9 +138,9 @@ Implementations are permitted to ignore user-specified hash functions in certain
 <p>
 <code>(make-hash-table </code><em>comparator</em> [ <em>arg</em> ... ]<code>)</code>
 </p>
-<p><small>
+<p><s>
 <code>(make-hash-table </code><em>equality-predicate</em> [ <em>hash-function</em> ] [ <em>arg</em> ... ]<code>)</code>
-</small></p>
+</s></p>
 <p>
 Returns a newly allocated hash table whose equality predicate and hash function are extracted from <em>comparator</em>.  Alternatively, for backward compatibility with SRFI 69 the equality predicate and hash function can be passed as separate arguments; this usage is deprecated.  Note that SRFI 69 hash functions are specified to accept two arguments, the object to be hashed and a non-negative integer that bounds the hash code returned.  However, the hash functions passed to the procedures of this SRFI are not required to accept a second argument.
 </p>
@@ -148,7 +148,7 @@ Returns a newly allocated hash table whose equality predicate and hash function 
 If an equality predicate rather than a comparator is provided, the ability to omit the <em>hash-function</em> argument is severely limited.  The implementation must provide hash functions appropriate for use with the predicates <code>eq?</code>, <code>eqv?</code>, <code>equal?</code>, <code>string=?</code>, and <code>string-ci=?</code>, and may extend this list.  But if any unknown equality predicate is provided without a hash function, an error should be signaled.
 </p>
 <p>
-It is an error if the equality predicate does not accept two arguments and return a truth value.  It is also an error if the hash function does not accept one argument in the domain of the equality predicate and return a non-negative exact integer.  It is the programmer's responsibility to ensure that if two objects are the same in the sense of the equality predicate, then they  return the same value when passed to the hash function.  However, the converse is not required.  The hash function should attempt to deliver results that are as equally distributed as possible over the range from 0 to the largest conceivable number of hash buckets a hash table might have.
+It is an error if the equality predicate does not accept two arguments and return a truth value.  It is also an error if the hash function does not accept one argument in the domain of the equality predicate and return a non-negative exact integer.  It is the programmer's responsibility to ensure that if two objects are the same in the sense of the equality predicate, then they  return the same value when passed to the hash function.  However, the converse is not required.  The hash function should attempt to deliver results that are as equally distributed as possible over the range from 0 to the largest reasonable number of hash buckets a hash table might have.
 </p>
 <p>
 The meaning of any further arguments is implementation-dependent.  However, implementations which support the ability to specify the initial capacity of a hash table should interpret a non-negative exact integer as the specification of that capacity.  In addition, if the symbols <code>thread-safe</code>, <code>weak-keys</code>, <code>ephemeral-keys</code>, <code>weak-values</code>, or <code>ephemeral-values</code> are present, implementations should create thread-safe hash tables, hash tables with weak keys or ephemeral keys, or hash tables with weak or ephemeral values respectively.  Implementations are free to use ephemeral keys or values when weak keys are values respectively have been requested.  In an implementation which does not support these features, an error should be signaled if they are requested.  To avoid collision with the <em>hash-function</em> argument, none of these arguments can be procedures.
@@ -172,47 +172,52 @@ Create a new hash table as if by <code>make-hash-table</code> using <em>comparat
 <code>(alist-&gt;hash-table </code><em>alist comparator arg</em> ...<code>)</code>
 </p>
 <p>
-<small><code>(alist-&gt;hash-table </code><em>alist equality-predicate</em> [ <em>hash-function</em> ] <em>arg</em> ...<code>)</code>
-</small></p>
+<s><code>(alist-&gt;hash-table </code><em>alist equality-predicate</em> [ <em>hash-function</em> ] <em>arg</em> ...<code>)</code>
+</s></p>
 <p>
 Returns a newly allocated hash-table as if by <code>make-hash-table</code> using <em>comparator</em> and the <em>args</em>.  It is then initialized from the associations of <em>alist</em>.  Associations earlier in the list take precedence over those that come later.  The second form is for compatibility with SRFI 69, and is deprecated.
 </p>
 <h3 id="Hashfunctionsandreflectivity">Hash functions and reflectivity</h3>
-<p>These functions are provided solely for compatibility with SRFI 69 and are deprecated.</p>
-<p>
-<small><code>(hash </code><em>obj</em><code>)</code>
-</small></p>
-<p>
-The same as the hash function from SRFI 114's <code>equal-comparator</code> object.
-</p>
-<p><small><code>(string-hash </code><em>obj</em><code>)</code></small>
+<p>These functions are made part of this SRFI solely for compatibility with SRFI 69,
+and are deprecated.
 </p>
 <p>
-The same as the hash function from SRFI 114's <code>string-comparator</code> object.
+<s><code>(hash </code><em>obj</em><code>)</code>
+</s></p>
+<p><s>
+The same as the hash function from SRFI 128's <code>equal-comparator</code> object.
+</s></p>
+<p><s><code>(string-hash </code><em>obj</em><code>)</code></s>
 </p>
-<p><small><code>(string-ci-hash </code><em>obj</em><code>)</code></small>
+<p><s>
+The same as SRFI 128's <code>string-hash</code> procedure.
+For compatibility with the SRFI 69 sample implementation, it should accept and ignore a second argument.
+</s></p>
+<p><s><code>(string-ci-hash </code><em>obj</em><code>)</code></s>
 </p>
+<p><s>
+The same as SRFI 128's <code>string-ci-hash</code> procedure.
+For compatibility with the SRFI 69 sample implementation, it should accept and ignore a second argument.
+</s></p> 
 <p>
-The same as the hash function from SRFI 114's <code>string-ci-comparator</code> object.
-</p> 
-<p>
-<small><code>(hash-by-identity </code><em>obj</em><code>)</code></small>
+<s><code>(hash-by-identity </code><em>obj</em><code>)</code></s>
 </p>
+<p><s>
+The same as the hash function from SRFI 128's <code>eq-comparator</code> object.
+For compatibility with the SRFI 69 sample implementation, it should accept and ignore a second argument.
+</s></p>
 <p>
-The same as the hash function from SRFI 114's <code>eq-comparator</code> object.
+<s><code>(hash-table-equivalence-function </code><em>hash-table</em><code>)</code></s>
 </p>
-<p>
-<small><code>(hash-table-equivalence-function </code><em>hash-table</em><code>)</code></small>
-</p>
-<p>
+<p><s>
 Returns the equivalence procedure used to create <em>hash-table</em>.
-</p>
+</s></p>
 <p>
-<small><code>(hash-table-hash-function </code><em>hash-table</em><code>)</code></small>
+<s><code>(hash-table-hash-function </code><em>hash-table</em><code>)</code></s>
 </p>
-<p>
+<p><s>
 Returns the hash function used to create <em>hash-table</em>.  However, if the implementation has replaced the user-specified hash function with an implementation-specific alternative, the implementation may return <code>#f</code> instead.
-</p>
+</s></p>
 <h3 id="Predicates">Predicates</h3>
 <p>
 <code>(hash-table? </code><em>obj</em><code>)</code>
@@ -223,10 +228,10 @@ Returns <code>#t</code> if <em>obj</em> is a hash table, and <code>#f</code> oth
 <p>
 <code>(hash-table-contains? </code><em>hash-table key</em><code>)</code>
 </p>
-<small><p>
+<s><p>
 <code>(hash-table-exists? </code><em>hash-table key</em><code>)</code>
 </p>
-</small><p>
+</s><p>
 Returns <code>#t</code> if there is any association to <em>key</em> in <em>hash-table</em>, and <code>#f</code> otherwise.  Must execute in expected amortized constant time.  The <code>hash-table-exists</code> procedure is the same as <code>hash-table-contains</code>, is provided for backward compatibility with SRFI 69, and is deprecated.  (R6RS <code>hashtable-contains?</code>)
 </p>
 <p>
@@ -369,8 +374,8 @@ Returns a newly allocated hash table as if by <code>(make-hash-table </code><em>
 <code>(hash-table-for-each </code><em>proc hash-table</em><code>)</code>
 </p>
 <p>
-<small><code>(hash-table-walk </code><em>hash-table proc</em><code>)</code>
-</small></p>
+<s><code>(hash-table-walk </code><em>hash-table proc</em><code>)</code>
+</s></p>
 <p>
 Calls <em>proc</em> for every association in <em>hash-table</em> with two arguments: the key of the association and the value of the association.  The value returned by <em>proc</em> is discarded.  Returns an unspecified value.  The <code>hash-table-walk</code> procedure is equivalent to <code>hash-table-for-each</code> with the arguments reversed, is provided for backward compatibility with SRFI 69, and is deprecated.  (Common Lisp <code>maphash</code>)
 </p>
@@ -390,8 +395,8 @@ Calls <em>proc</em> for every association in <em>hash-table</em> with two argume
 <code>(hash-table-fold </code><em>proc seed hash-table</em><code>)</code>
 </p>
 <p>
-<small><code>(hash-table-fold </code><em>hash-table proc seed</em><code>)</code>
-</small></p>
+<s><code>(hash-table-fold </code><em>hash-table proc seed</em><code>)</code>
+</s></p>
 <p>
 Calls <em>proc</em> for every association in <em>hash-table</em> with three arguments: the key of the association, the value of the association, and an accumulated value <em>val</em>.  <em>Val</em> is <em>seed</em> for the first invocation of <em>procedure</em>, and for subsequent invocations of <em>proc</em>, the returned value of the previous invocation.  The value returned by <code>hash-table-fold</code> is the return value of the last invocation of <em>proc</em>.  The order of arguments with <em>hash-table</em> as the first argument is provided for SRFI 69 compatibility, and is deprecated.
 </p>
@@ -443,8 +448,8 @@ Returns an alist with the same associations as <em>hash-table</em> in an unspeci
 <code>(hash-table-union! </code><em>hash-table<sub>1</sub> hash-table<sub>2</sub></em><code>)</code>
 </p>
 <p>
-<small><code>(hash-table-merge! </code><em>hash-table<sub>1</sub> hash-table<sub>2</sub></em><code>)</code>
-</small></p>
+<s><code>(hash-table-merge! </code><em>hash-table<sub>1</sub> hash-table<sub>2</sub></em><code>)</code>
+</s></p>
 <p>
 Adds the associations of <em>hash-table<sub>2</sub></em> to <em>hash-table<sub>1</sub></em> and returns <em>hash-table<sub>1</sub></em>.  If a key appears in both hash tables, its value is set to the value appearing in <em>hash-table<sub>1</sub></em>.  Returns <em>hash-table<sub>1</sub></em>.  The <code>hash-table-merge!</code> procedure is the same as <code>hash-table-union!</code>, is provided for compatibility with SRFI 69, and is deprecated.
 </p>
