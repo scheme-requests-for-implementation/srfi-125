@@ -123,14 +123,14 @@ All references to "executing in expected amortized constant time" presuppose tha
 Hash tables are allowed to cache the results of calling the equality predicate and hash function, so programs cannot rely on the hash function being called exactly once for every primitive hash table operation: it may be called zero, one, or more times.
 </p>
 <p>
-It is an error if the procedure argument of <code>hash-table-find</code>, <code>hash-table-count</code>, <code>hash-table-map</code>, <code>hash-table-for-each</code>, <code>hash-table-map!</code>, <code>hash-table-map->list</code>, or <code>hash-table-fold</code> mutates the hash table being walked.
+It is an error if the procedure argument of <code>hash-table-find</code>, <code>hash-table-count</code>, <code>hash-table-map</code>, <code>hash-table-for-each</code>, <code>hash-table-map!</code>, <code>hash-table-map->list</code>, <code>hash-table-fold</code> or <code>hash-table-prune!</code> mutates the hash table being walked.
 </p>
 <p>
 It is an error to pass two hash tables that have different comparators or equality predicates to any of the procedures of this SRFI.
 </p>
 <p>
 Implementations are permitted to ignore user-specified hash functions in certain circumstances.  Specifically, if the equality predicate, whether passed as part of a comparator or explicitly, is more fine-grained (in the sense of R7RS-small section 6.1) than <code>equal?</code>, the implementation is free — indeed, is encouraged — to ignore the user-specified hash function and use something implementation-dependent.  This allows the use of addresses as hashes, in which case the keys must be rehashed if they are moved by the garbage collector.  Such a hash function is unsafe to use outside the context of implementation-provided hash tables.  It can of course be exposed by an implementation as an extension, with suitable warnings against inappropriate uses.</p>
-<p>It is an error to mutate a key during or after its insertion into a hash table in such a way that the hash function of the table will return a different result when applied to that key.  In combination with the previous rule, this means that mutating a key in a hash table based on <code>eq-comparator</code> or <code>eqv-comparator</code>, or the hash functions <code>eq?</code> or <code>eqv?</code>, is unproblematic, but mutating a key in a hash table based on <code>equal-comparator</code> or <code>equal?</code> is almost always an error.
+<p>It is an error to mutate a key during or after its insertion into a hash table in such a way that the hash function of the table will return a different result when applied to that key.  In combination with the previous rule, this means that mutating a key in a hash table based on <code>eq-comparator</code> or <code>eqv-comparator</code>, or the equality predicates <code>eq?</code> or <code>eqv?</code>, may be possible, but mutating a key in a hash table based on <code>equal-comparator</code> or <code>equal?</code> is almost always unsafe.
 </p>
 <h3 id="Index">Index</h3>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Constructors">Constructors</a>: <code>make-hash-table</code>, <code>hash-table</code>, <code>hash-table-unfold</code>, <code>alist-&gt;hash-table</code>
@@ -154,12 +154,11 @@ Returns a newly allocated hash table whose equality predicate and hash function 
 </p>
 <p>
 If an equality predicate rather than a comparator is provided, the ability to omit the <em>hash-function</em> argument is severely limited.  The implementation must provide hash functions appropriate for use with the predicates <code>eq?</code>, <code>eqv?</code>, <code>equal?</code>, <code>string=?</code>, and <code>string-ci=?</code>, and may extend this list.  But if any unknown equality predicate is provided without a hash function, an error should be signaled.
+The constraints on equality predicates and hash functions are given in
+<a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>.
 </p>
 <p>
-It is an error if the equality predicate does not accept two arguments and return a truth value.  It is also an error if the hash function does not accept one argument in the domain of the equality predicate and return a non-negative exact integer.  It is the programmer's responsibility to ensure that if two objects are the same in the sense of the equality predicate, then they  return the same value when passed to the hash function.  However, the converse is not required.  The hash function should attempt to deliver results that are as equally distributed as possible over the range from 0 to the largest reasonable number of hash buckets a hash table might have.
-</p>
-<p>
-The meaning of any further arguments is implementation-dependent.  However, implementations which support the ability to specify the initial capacity of a hash table should interpret a non-negative exact integer as the specification of that capacity.  In addition, if the symbols <code>thread-safe</code>, <code>weak-keys</code>, <code>ephemeral-keys</code>, <code>weak-values</code>, or <code>ephemeral-values</code> are present, implementations should create thread-safe hash tables, hash tables with weak keys or ephemeral keys, or hash tables with weak or ephemeral values respectively.  Implementations are free to use ephemeral keys or values when weak keys are values respectively have been requested.  To avoid collision with the <em>hash-function</em> argument, none of these arguments can be procedures.
+The meaning of any further arguments is implementation-dependent.  However, implementations which support the ability to specify the initial capacity of a hash table should interpret a non-negative exact integer as the specification of that capacity.  In addition, if the symbols <code>thread-safe</code>, <code>weak-keys</code>, <code>ephemeral-keys</code>, <code>weak-values</code>, or <code>ephemeral-values</code> are present, implementations should create thread-safe hash tables, hash tables with weak keys or ephemeral keys, or hash tables with weak or ephemeral values respectively.  Implementations are free to use ephemeral keys or values when weak keys or values respectively have been requested.  To avoid collision with the <em>hash-function</em> argument, none of these arguments can be procedures.
 </p>
 <p>
 (R6RS <code>make-eq-hashtable</code>, <code>make-eqv-hashtable</code>, and <code>make-hashtable</code>; Common Lisp <code>make-hash-table</code>)
@@ -447,13 +446,13 @@ Returns a newly allocated list of all the keys in <em>hash-table</em>.
 <code>(hash-table-entries </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Returns two values, a newly allocated list of all the keys in <em>hash-table</em>and a newly allocated list of all the values in <em>hash-table</em> in the corresponding order.  R6RS <code>hash-table-entries</code> returns vectors.)
+Returns two values, a newly allocated list of all the keys in <em>hash-table</em>and a newly allocated list of all the values in <em>hash-table</em> in the corresponding order.  R6RS <code>hash-table-entries</code> returns vectors.
 </p>
 <p>
 <code>(hash-table-&gt;alist </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Returns an alist with the same associations as <em>hash-table</em> in an unspecified order.  (SRFI 69)
+Returns an alist with the same associations as <em>hash-table</em> in an unspecified order.
 </p>
 <h3 id="Hashtablesassets">Hash tables as sets</h3>
 <p>
@@ -493,15 +492,6 @@ The procedures in this SRFI are currently in the <code>(in-progress hash tables)
 </p>
 <p>
 There also exists an <a href="https://github.com/larcenists/larceny/blob/master/lib/SRFI/srfi-69.sch">implementation of SRFI 69</a> on top of  <code>(rnrs hashtables)</code>, which shows how to construct an implementation of SRFI 69 that would be fully compatible with the sample implementation of this SRFI.
-</p>
-<p>
-Note that trying to import both the libraries specified here and an unrelated implementation of SRFI 69 will certainly cause conflicts.  It should be possible to construct an implementation of SRFI 69 that does not conflict with the sample implementation of this SRFI or with <code>(r6rs hashtables)</code>, but all non-conflicting implementations of SRFI 69 must:
-</p>
-<ul><li>extend the <code>make-hash-table</code> and <code>alist-&gt;hash-table</code> procedures to accommodate their more general arguments as specified by this SRFI
-</li><li>extend the <code>hash-table-fold</code> procedure to accept arguments in the order specified here as well as in the order specified by SRFI 69
-</li><li>take care never to call a hash function with more than one argument
-</li></ul><p>
-As of this writing, there are no such upward compatible implementations of SRFI 69.
 </p>
 <p>The sample implementation never calls any hash function with two arguments.</p>
 <p>
