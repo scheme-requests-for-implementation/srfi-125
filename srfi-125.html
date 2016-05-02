@@ -30,18 +30,30 @@ John Cowan, Will Clinger
 <h1>Abstract</h1>
 
 <p>
-This SRFI defines an interface to hash tables, which are widely recognized as a fundamental data structure for a wide variety of applications.  A hash table is a data structure that:
+This SRFI defines an interface to hash tables, which are widely
+recognized as a fundamental data structure for a wide variety of
+applications.  A hash table is a data structure that:
 </p>
 <ul><li>Is disjoint from all other types.
-</li><li>Provides a mapping from objects known as <em>keys</em> to corresponding objects known as <em>values</em>.
-<ul><li>Keys may be any Scheme objects in some kinds of hash tables, but are restricted in other kinds.
+</li><li>Provides a mapping from objects known as <em>keys</em>
+to corresponding objects known as <em>values</em>.
+<ul><li>Keys may be any Scheme objects in some kinds of hash tables,
+but are restricted in other kinds.
 </li><li>Values may be any Scheme objects.
-</li></ul></li><li>Has no intrinsic order for the key-value <em>associations</em> it contains.
-</li><li>Provides an <em>equality predicate</em> which defines when a proposed key is the same as an existing key.  No table may contain more than one value for a given key.
-</li><li>Provides a <em>hash function</em> which maps a candidate key into a non-negative exact integer.
-</li><li>Supports mutation as the primary means of setting the contents of a table.
-</li><li>Provides key lookup and destructive update in (expected) amortized constant time, provided a satisfactory hash function is available.
-</li><li>Does not guarantee that whole-table operations work in the presence of concurrent mutation of the whole hash table (values may be safely mutated).
+</li></ul></li><li>Has no intrinsic order for the key-value
+<em>associations</em> it contains.
+</li><li>Provides an <em>equality predicate</em> which defines
+when a proposed key is the same as an existing key.  No table
+may contain more than one value for a given key.
+</li><li>Provides a <em>hash function</em> which maps a candidate
+key into a non-negative exact integer.
+</li><li>Supports mutation as the primary means of setting the
+contents of a table.
+</li><li>Provides key lookup and destructive update in (expected)
+amortized constant time, provided a satisfactory hash function is available.
+</li><li>Does not guarantee that whole-table operations work in
+the presence of concurrent mutation of the whole hash table
+(values may be safely mutated).
 </li></ul>
 
 
@@ -52,58 +64,132 @@ This SRFI defines an interface to hash tables, which are widely recognized as a 
 <h1>Rationale</h1>
 
 <p>
-Hash tables themselves don't really need defending: almost all dynamically typed languages, from awk to JavaScript to Lua to Perl to Python to Common Lisp, and including many Scheme implementations, provide them in some form as a fundamental data structure.  Therefore, what needs to be defended is not the data structure but the procedures.  This SRFI is at an intermediate level.  It supports a great many convenience procedures on top of the basic hash table interfaces provided by <a href="http://srfi.schemers.org/srfi-69/srfi-69.html">SRFI 69</a> and <a href="http://www.r6rs.org/final/html/r6rs-lib/r6rs-lib-Z-H-14.html">R6RS</a>.  Nothing in it adds power to what those interfaces provide, but it does add convenience in the form of pre-debugged routines to do various common things, and even some things not so commonly done but useful.
+Hash tables themselves don't really need defending: almost all
+dynamically typed languages, from awk to JavaScript to Lua to
+Perl to Python to Common Lisp, and including many Scheme
+implementations, provide them in some form as a fundamental
+data structure.  Therefore, what needs to be defended is not
+the data structure but the procedures.  This SRFI is at an
+intermediate level.  It supports a great many convenience
+procedures on top of the basic hash table interfaces provided
+by <a href="http://srfi.schemers.org/srfi-69/srfi-69.html">SRFI 69</a>
+and
+<a href="http://www.r6rs.org/final/html/r6rs-lib/r6rs-lib-Z-H-14.html">R6RS</a>.
+Nothing in it adds power to what those interfaces provide, but
+it does add convenience in the form of pre-debugged routines to
+do various common things, and even some things not so commonly
+done but useful.
 </p>
 <p>
-There is no mandated support for thread safety, immutability, or weakness, though there are portable hooks for specifying these features.
+There is no mandated support for thread safety, immutability,
+or weakness, though there are portable hooks for specifying these features.
 </p>
 <p>
-This specification accepts separate equality predicates and hash functions for backward compatibility, but strongly encourages the use of <a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a> comparators, which package a type test, an equality predicate, and a hash function into a single bundle.
+This specification accepts separate equality predicates and hash
+functions for backward compatibility, but strongly encourages the use of
+<a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>
+comparators, which package a type test, an equality predicate, and a
+hash function into a single bundle.
 </p>
 <h3 id="SRFI69compatibility">SRFI 69 compatibility</h3>
 <p>
-This SRFI is downward compatible with SRFI 69.  Some procedures have been given new preferred names for compatibility with other SRFIs, but in all cases the SRFI 69 names have been retained as synonyms.  They appear in this SRFI <small>in small print</small>.
-There is one exception: the reflective procedure <code>hash-table-hash-function</code> may return <code>#f</code>, which is not permitted by SRFI 69.  See the specification for details.</p>
+This SRFI is downward compatible with SRFI 69.  Some procedures have
+been given new preferred names for compatibility with other SRFIs,
+but in all cases the SRFI 69 names have been retained as synonyms.
+They appear in this SRFI <small>in small print</small>.
+There is one exception: the reflective procedure
+<code>hash-table-hash-function</code> may return <code>#f</code>,
+which is not permitted by SRFI 69.  See the specification for details.</p>
 <h3 id="R6RScompatibility">R6RS compatibility</h3>
 <p>
-The relatively few hash table procedures in R6RS are all available in this SRFI under somewhat different names.  The only substantive difference is that R6RS <code>hashtable-values</code> and <code>hashtable-entries</code> return vectors, whereas in this SRFI <code>hash-table-values</code> and <code>hash-table-entries</code> return lists.  This SRFI adopts SRFI 69's term <code>hash-table</code> rather than R6RS's <code>hashtable</code>, because of the universal use of "hash table" rather than "hashtable" in other languages and in technical prose generally.  Besides, the English word <em>hashtable</em> obviously means something that can be ... hashted.
+The relatively few hash table procedures in R6RS are all available
+in this SRFI under somewhat different names.  The only substantive
+difference is that R6RS <code>hashtable-values</code> and
+<code>hashtable-entries</code> return vectors, whereas in this
+SRFI <code>hash-table-values</code> and <code>hash-table-entries</code>
+return lists.  This SRFI adopts SRFI 69's term <code>hash-table</code>
+rather than R6RS's <code>hashtable</code>, because of the universal
+use of "hash table" rather than "hashtable" in other languages and
+in technical prose generally.  Besides, the English word
+<em>hashtable</em> obviously means something that can be ... hashted.
 </p>
 <p>
-In addition, the <code>hashtable-ref</code> and <code>hashtable-update!</code> of R6RS correspond to the <code>hash-table-ref/default</code> and <code>hash-table-update!/default</code> of both SRFI 69 and this SRFI.
+In addition, the <code>hashtable-ref</code> and
+<code>hashtable-update!</code> of R6RS correspond to the
+<code>hash-table-ref/default</code> and
+<code>hash-table-update!/default</code> of both SRFI 69 and this SRFI.
 </p>
 <p>
 It would be trivial to provide the R6RS names on top of this SRFI.
 </p>
 <h3 id="CommonLispcompatibility">Common Lisp compatibility</h3>
 <p>
-As usual, the Common Lisp names are completely different from the Scheme names. Common Lisp provides the following capabilities that are not in this SRFI:
+As usual, the Common Lisp names are completely different from the
+Scheme names. Common Lisp provides the following capabilities that
+are not in this SRFI:
 </p>
-<ul><li>The constructor allows specifying the rehash size and rehash threshold of the new hash table.  There are also accessors and mutators for these and for the current capacity (as opposed to size).
-</li></ul><ul><li>There are hash tables based on <code>equalp</code> (which does not exist in Scheme).
-</li></ul><ul><li><code>With-hash-table-iterator</code> is a hash table external iterator implemented as a local macro.
-</li></ul><ul><li><code>Sxhash</code> is a implementation-specific hash function for the <code>equal</code> predicate.
+<ul><li>The constructor allows specifying the rehash size and
+rehash threshold of the new hash table.  There are also accessors
+and mutators for these and for the current capacity (as opposed to
+size).
+</li></ul><ul><li>There are hash tables based on <code>equalp</code>
+(which does not exist in Scheme).
+</li></ul><ul><li><code>With-hash-table-iterator</code> is a hash
+table external iterator implemented as a local macro.
+</li></ul><ul><li><code>Sxhash</code> is a implementation-specific
+hash function for the <code>equal</code> predicate.
 It has the property that objects in different instantiations
 of the same Lisp implementation that are
 <a href="http://www.lispworks.com/documentation/lw61/CLHS/Body/03_bdbb.htm">similar</a>,
-a concept analogous to <code>equal</code> but defined across all instantiations,
-always return the same value from <code>sxhash</code>; for example, the symbol
+a concept analogous to <code>equal</code> but defined across all
+instantiations,
+always return the same value from <code>sxhash</code>; for example,
+the symbol
 <code>xyz</code> will have the same <code>sxhash</code> result in
 all instantiations.
 </li></ul><h3 id="Sources">Sources</h3>
 <p>
-The procedures in this SRFI are drawn primarily from SRFI 69 and R6RS.  In addition, the following sources are acknowledged:
+The procedures in this SRFI are drawn primarily from SRFI 69 and R6RS.
+In addition, the following sources are acknowledged:
 </p>
-<ul><li>The <code>hash-table-mutable?</code> procedure and the second argument of <code>hash-table-copy</code> (which allows the creation of immutable hash tables) are from R6RS, renamed in the style of this SRFI.
-</li></ul><ul><li>The <code>hash-table-intern!</code> procedure is from <a href="http://docs.racket-lang.org/reference/hashtables.html">Racket</a>, renamed in the style of this SRFI.
-</li></ul><ul><li>The <code>hash-table-find</code> procedure is a modified version of <code>table-search</code> in <a href="http://www.iro.umontreal.ca/~gambit/doc/gambit-c.html#Tables">Gambit</a>.
-</li></ul><ul><li>The procedures <code>hash-table-unfold</code> and <code>hash-table-count</code> were suggested by <a href="http://srfi.schemers.org/srfi-1/srfi-1.html">SRFI 1</a>.  
-</li></ul><ul><li>The procedures <code>hash-table=?</code> and <code>hash-table-map</code> were suggested by <a href="http://hackage.haskell.org/packages/archive/containers/0.5.2.1/doc/html/Data-Map-Strict.html">Haskell's Data.Map.Strict module</a>.
-</li></ul><ul><li>The procedure <code>hash-table-map->list</code> is from <a href="http://www.gnu.org/software/guile/manual/html_node/Hash-Table-Reference.html">Guile</a>.
+<ul><li>The <code>hash-table-mutable?</code> procedure and the
+second argument of <code>hash-table-copy</code> (which allows
+the creation of immutable hash tables) are from R6RS, renamed
+in the style of this SRFI.
+</li></ul><ul><li>The <code>hash-table-intern!</code> procedure is from
+<a href="http://docs.racket-lang.org/reference/hashtables.html">Racket</a>,
+renamed in the style of this SRFI.
+</li></ul><ul><li>The <code>hash-table-find</code> procedure is a modified
+version of <code>table-search</code> in
+<a href="http://www.iro.umontreal.ca/~gambit/doc/gambit-c.html#Tables">Gambit</a>.
+</li></ul><ul><li>The procedures <code>hash-table-unfold</code> and
+<code>hash-table-count</code> were suggested by
+<a href="http://srfi.schemers.org/srfi-1/srfi-1.html">SRFI 1</a>.  
+</li></ul><ul><li>The procedures <code>hash-table=?</code> and
+<code>hash-table-map</code> were suggested by
+<a href="http://hackage.haskell.org/packages/archive/containers/0.5.2.1/doc/html/Data-Map-Strict.html">Haskell's Data.Map.Strict module</a>.
+</li></ul><ul><li>The procedure <code>hash-table-map->list</code> is from
+<a href="http://www.gnu.org/software/guile/manual/html_node/Hash-Table-Reference.html">Guile</a>.
 </li></ul><p>
-The procedures <code>hash-table-empty?</code>, <code>hash-table-empty-copy</code>, <code>hash-table-pop!</code>, <code>hash-table-map!</code>, <code>hash-table-intersection!</code>, <code>hash-table-difference!</code>, and <code>hash-table-xor!</code> were added for convenience and completeness.
+The procedures <code>hash-table-empty?</code>,
+<code>hash-table-empty-copy</code>, <code>hash-table-pop!</code>,
+<code>hash-table-map!</code>, <code>hash-table-intersection!</code>,
+<code>hash-table-difference!</code>, and <code>hash-table-xor!</code>
+were added for convenience and completeness.
 </p>
 <p>
-The native hash tables of <a href="http://web.mit.edu/scheme_v9.0.1/doc/mit-scheme-ref/Hash-Tables.html">MIT</a>,  <a href="http://sisc-scheme.org/manual/html/ch09.html#Hashtables">SISC</a>, <a href="http://www-sop.inria.fr/indes/fp/Bigloo/doc/bigloo-7.html#Hash-Tables">Bigloo</a>, <a href="http://s48.org/0.57/manual/s48manual_44.html">Scheme48</a>, <a href="http://www.cs.indiana.edu/scheme-repository/SCM/slib_2.html#SEC13">SLIB</a>, <a href="http://www.rscheme.org/rs/b/0.7.3.4/5/html/c2143.html">RScheme</a>, <a href="https://ccrma.stanford.edu/software/snd/snd/s7.html#hashtables">Scheme 7</a>, <a href="https://github.com/barak/scheme9/blob/master/lib/hash-table.scm">Scheme 9</a>, <a href="http://www.fifi.org/cgi-bin/info2www?(librep)Hash+Tables">Rep</a>, and <a href="https://code.google.com/p/femtolisp/wiki/APIReference">FemtoLisp</a> were also investigated, but no additional procedures were incorporated.
+The native hash tables of
+<a href="http://web.mit.edu/scheme_v9.0.1/doc/mit-scheme-ref/Hash-Tables.html">MIT</a>,
+<a href="http://sisc-scheme.org/manual/html/ch09.html#Hashtables">SISC</a>,
+<a href="http://www-sop.inria.fr/indes/fp/Bigloo/doc/bigloo-7.html#Hash-Tables">Bigloo</a>,
+<a href="http://s48.org/0.57/manual/s48manual_44.html">Scheme48</a>,
+<a href="http://www.cs.indiana.edu/scheme-repository/SCM/slib_2.html#SEC13">SLIB</a>,
+<a href="http://www.rscheme.org/rs/b/0.7.3.4/5/html/c2143.html">RScheme</a>,
+<a href="https://ccrma.stanford.edu/software/snd/snd/s7.html#hashtables">Scheme 7</a>,
+<a href="https://github.com/barak/scheme9/blob/master/lib/hash-table.scm">Scheme 9</a>,
+<a href="http://www.fifi.org/cgi-bin/info2www?(librep)Hash+Tables">Rep</a>,
+and <a href="https://code.google.com/p/femtolisp/wiki/APIReference">FemtoLisp</a>
+were also investigated, but no additional procedures were incorporated.
 
 </p>
 <h3 id="Pronunciation">Pronunciation</h3>
@@ -112,38 +198,104 @@ The slash in the names of some procedures can be pronounced "with".
 </p>
 <h3 id="Acknowledgements">Acknowledgements</h3>
 <p>
-Some of the language of this SRFI is copied from SRFI 69 with thanks to its author, Panu Kalliokoski.  However, he is not responsible for what I have done with it.  Thanks to Will Clinger for providing the sample implementation, and to Taylan Ulrich Bayırlı/Kammer for his spirited review.
+Some of the language of this SRFI is copied from SRFI 69 with thanks
+to its author, Panu Kalliokoski.  However, he is not responsible for
+what I have done with it.  Thanks to Will Clinger for providing the
+sample implementation, and to Taylan Ulrich Bayırlı/Kammer for his
+spirited review.
 </p>
 
 <h1>Specification</h1>
 
 <p>
-All references to "executing in expected amortized constant time" presuppose that a satisfactory hash function is available.  Arbitrary or impure hash functions can make a hash of any implementation.
+All references to "executing in expected amortized constant time"
+presuppose that a satisfactory hash function is available.  Arbitrary
+or impure hash functions can make a hash of any implementation.
 </p>
 <p>
-Hash tables are allowed to cache the results of calling the equality predicate and hash function, so programs cannot rely on the hash function being called exactly once for every primitive hash table operation: it may be called zero, one, or more times.
+Hash tables are allowed to cache the results of calling the equality
+predicate and hash function, so programs cannot rely on the hash
+function being called exactly once for every primitive hash table
+operation: it may be called zero, one, or more times.
 </p>
 <p>
-It is an error if the procedure argument of <code>hash-table-find</code>, <code>hash-table-count</code>, <code>hash-table-map</code>, <code>hash-table-for-each</code>, <code>hash-table-map!</code>, <code>hash-table-map->list</code>, <code>hash-table-fold</code> or <code>hash-table-prune!</code> mutates the hash table being walked.
+It is an error if the procedure argument of <code>hash-table-find</code>,
+<code>hash-table-count</code>, <code>hash-table-map</code>,
+<code>hash-table-for-each</code>, <code>hash-table-map!</code>,
+<code>hash-table-map->list</code>, <code>hash-table-fold</code>
+or <code>hash-table-prune!</code> mutates the hash table being walked.
 </p>
 <p>
-It is an error to pass two hash tables that have different comparators or equality predicates to any of the procedures of this SRFI.
+It is an error to pass two hash tables that have different comparators
+or equality predicates to any of the procedures of this SRFI.
 </p>
 <p>
-Implementations are permitted to ignore user-specified hash functions in certain circumstances.  Specifically, if the equality predicate, whether passed as part of a comparator or explicitly, is more fine-grained (in the sense of R7RS-small section 6.1) than <code>equal?</code>, the implementation is free — indeed, is encouraged — to ignore the user-specified hash function and use something implementation-dependent.  This allows the use of addresses as hashes, in which case the keys must be rehashed if they are moved by the garbage collector.  Such a hash function is unsafe to use outside the context of implementation-provided hash tables.  It can of course be exposed by an implementation as an extension, with suitable warnings against inappropriate uses.</p>
-<p>It is an error to mutate a key during or after its insertion into a hash table in such a way that the hash function of the table will return a different result when applied to that key.  In combination with the previous rule, this means that mutating a key in a hash table based on <code>eq-comparator</code> or <code>eqv-comparator</code>, or the equality predicates <code>eq?</code> or <code>eqv?</code>, may be possible, but mutating a key in a hash table based on <code>equal-comparator</code> or <code>equal?</code> is almost always unsafe.
+Implementations are permitted to ignore user-specified hash
+functions in certain circumstances.  Specifically, if the
+equality predicate, whether passed as part of a comparator
+or explicitly, is more fine-grained (in the sense of R7RS-small
+section 6.1) than <code>equal?</code>, the implementation is
+free — indeed, is encouraged — to ignore the user-specified
+hash function and use something implementation-dependent.
+This allows the use of addresses as hashes, in which case
+the keys must be rehashed if they are moved by the garbage
+collector.  Such a hash function is unsafe to use outside
+the context of implementation-provided hash tables.  It can
+of course be exposed by an implementation as an extension,
+with suitable warnings against inappropriate uses.</p>
+<p>It is an error to mutate a key during or after its insertion
+into a hash table in such a way that the hash function of the
+table will return a different result when applied to that key.
+In combination with the previous rule, this means that mutating
+a key in a hash table based on <code>eq-comparator</code> or
+<code>eqv-comparator</code>, or the equality predicates
+<code>eq?</code> or <code>eqv?</code>, may be possible,
+but mutating a key in a hash table based on <code>equal-comparator</code>
+or <code>equal?</code> is almost always unsafe.
 </p>
 <h3 id="Index">Index</h3>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Constructors">Constructors</a>: <code>make-hash-table</code>, <code>hash-table</code>, <code>hash-table-unfold</code>, <code>alist-&gt;hash-table</code>
-</li></ul><ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashfunctionsandreflectivity">Hash functions and reflectivity</a>: <code>hash</code>, <code>string-hash</code>, <code>string-ci-hash</code>, <code>hash-by-identity</code>
-</li></ul><ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Predicates">Predicates</a>: <code>hash-table?</code>, <code>hash-table-contains?</code>, <code>hash-table-empty?</code>, <code>hash-table=?</code>, <code>hash-table-immutable?</code>
-</li></ul><ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Accessors">Accessors</a>: <code>hash-table-ref</code>, <code>hash-table-ref/default</code>
-</li></ul><ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mutators">Mutators</a>: <code>hash-table-set!</code>, <code>hash-table-set-entries!</code>, <code>hash-table-delete!</code>, <code>hash-table-delete-keys!</code>, <code>hash-table-intern!</code>, <code>hash-table-update!</code>, <code>hash-table-update!/default</code>, <code>hash-table-push!</code>, <code>hash-table-pop!</code>, <code>hash-table-clear!</code>
-</li></ul><ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Thewholehashtable">The whole hash table</a>: <code>hash-table-size</code>, <code>hash-table-keys</code>, <code>hash-table-values</code>, <code>hash-table-entries</code>, <code>hash-table-find</code>, <code>hash-table-count</code>
-</li></ul><ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mappingandfolding">Mapping and folding</a>: <code>hash-table-map</code>, <code>hash-table-for-each</code>, <code>hash-table-map!</code>, <code>hash-table-map->list</code>, <code>hash-table-fold</code>, <code>hash-table-prune!</code>
-</li></ul><ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Copyingandconversion">Copying and conversion</a>: <code>hash-table-copy</code>, <code>hash-table-empty-copy</code>, <code>hash-table-&gt;alist</code>
-</li></ul><ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashtablesassets">Hash tables as sets</a>: <code>hash-table-union!</code>, <code>hash-table-intersection!</code>, <code>hash-table-difference!</code>, <code>hash-table-xor!</code>
-</li></ul><h3 id="Constructors">Constructors</h3>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Constructors">Constructors</a>:
+<code>make-hash-table</code>, <code>hash-table</code>,
+<code>hash-table-unfold</code>, <code>alist-&gt;hash-table</code>
+</li></ul>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashfunctionsandreflectivity">Hash functions and reflectivity</a>:
+<code>hash</code>, <code>string-hash</code>, <code>string-ci-hash</code>,
+<code>hash-by-identity</code>
+</li></ul>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Predicates">Predicates</a>:
+<code>hash-table?</code>, <code>hash-table-contains?</code>,
+<code>hash-table-empty?</code>, <code>hash-table=?</code>,
+<code>hash-table-immutable?</code>
+</li></ul>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Accessors">Accessors</a>:
+<code>hash-table-ref</code>, <code>hash-table-ref/default</code>
+</li></ul>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mutators">Mutators</a>:
+<code>hash-table-set!</code>, <code>hash-table-set-entries!</code>,
+<code>hash-table-delete!</code>, <code>hash-table-delete-keys!</code>,
+<code>hash-table-intern!</code>, <code>hash-table-update!</code>,
+<code>hash-table-update!/default</code>, <code>hash-table-push!</code>,
+<code>hash-table-pop!</code>, <code>hash-table-clear!</code>
+</li></ul>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Thewholehashtable">The whole hash table</a>:
+<code>hash-table-size</code>, <code>hash-table-keys</code>,
+<code>hash-table-values</code>, <code>hash-table-entries</code>,
+<code>hash-table-find</code>, <code>hash-table-count</code>
+</li></ul>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mappingandfolding">Mapping and folding</a>:
+<code>hash-table-map</code>, <code>hash-table-for-each</code>,
+<code>hash-table-map!</code>, <code>hash-table-map->list</code>,
+<code>hash-table-fold</code>, <code>hash-table-prune!</code>
+</li></ul>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Copyingandconversion">Copying and conversion</a>:
+<code>hash-table-copy</code>, <code>hash-table-empty-copy</code>,
+<code>hash-table-&gt;alist</code>
+</li></ul>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashtablesassets">Hash tables as sets</a>:
+<code>hash-table-union!</code>, <code>hash-table-intersection!</code>,
+<code>hash-table-difference!</code>, <code>hash-table-xor!</code>
+</li></ul>
+<h3 id="Constructors">Constructors</h3>
 <p>
 <code>(make-hash-table </code><em>comparator</em> [ <em>arg</em> ... ]<code>)</code>
 </p>
@@ -151,30 +303,64 @@ Implementations are permitted to ignore user-specified hash functions in certain
 <code>(make-hash-table </code><em>equality-predicate</em> [ <em>hash-function</em> ] [ <em>arg</em> ... ]<code>)</code>
 </small></p>
 <p>
-Returns a newly allocated hash table whose equality predicate and hash function are extracted from <em>comparator</em>.  Alternatively, for backward compatibility with SRFI 69 the equality predicate and hash function can be passed as separate arguments; this usage is deprecated.
+Returns a newly allocated hash table whose equality predicate and
+hash function are extracted from <em>comparator</em>.  Alternatively,
+for backward compatibility with SRFI 69 the equality predicate and
+hash function can be passed as separate arguments; this usage is deprecated.
 </p>
 <p>
-If an equality predicate rather than a comparator is provided, the ability to omit the <em>hash-function</em> argument is severely limited.  The implementation must provide hash functions appropriate for use with the predicates <code>eq?</code>, <code>eqv?</code>, <code>equal?</code>, <code>string=?</code>, and <code>string-ci=?</code>, and may extend this list.  But if any unknown equality predicate is provided without a hash function, an error should be signaled.
+If an equality predicate rather than a comparator is provided,
+the ability to omit the <em>hash-function</em> argument is severely
+limited.  The implementation must provide hash functions appropriate
+for use with the predicates <code>eq?</code>, <code>eqv?</code>,
+<code>equal?</code>, <code>string=?</code>, and <code>string-ci=?</code>,
+and may extend this list.  But if any unknown equality predicate is
+provided without a hash function, an error should be signaled.
 The constraints on equality predicates and hash functions are given in
 <a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>.
 </p>
 <p>
-The meaning of any further arguments is implementation-dependent.  However, implementations which support the ability to specify the initial capacity of a hash table should interpret a non-negative exact integer as the specification of that capacity.  In addition, if the symbols <code>thread-safe</code>, <code>weak-keys</code>, <code>ephemeral-keys</code>, <code>weak-values</code>, or <code>ephemeral-values</code> are present, implementations should create thread-safe hash tables, hash tables with weak keys or ephemeral keys, or hash tables with weak or ephemeral values respectively.  Implementations are free to use ephemeral keys or values when weak keys or values respectively have been requested.  To avoid collision with the <em>hash-function</em> argument, none of these arguments can be procedures.
+The meaning of any further arguments is implementation-dependent.
+However, implementations which support the ability to specify the
+initial capacity of a hash table should interpret a non-negative
+exact integer as the specification of that capacity.  In addition,
+if the symbols <code>thread-safe</code>, <code>weak-keys</code>,
+<code>ephemeral-keys</code>, <code>weak-values</code>, or
+<code>ephemeral-values</code> are present, implementations
+should create thread-safe hash tables, hash tables with weak
+keys or ephemeral keys, or hash tables with weak or ephemeral
+values respectively.  Implementations are free to use ephemeral
+keys or values when weak keys or values respectively have been
+requested.  To avoid collision with the <em>hash-function</em>
+argument, none of these arguments can be procedures.
 </p>
 <p>
-(R6RS <code>make-eq-hashtable</code>, <code>make-eqv-hashtable</code>, and <code>make-hashtable</code>; Common Lisp <code>make-hash-table</code>)
+(R6RS <code>make-eq-hashtable</code>, <code>make-eqv-hashtable</code>,
+and <code>make-hashtable</code>; Common Lisp <code>make-hash-table</code>)
 </p>
 <p>
 <code>(hash-table </code><em>comparator</em> ( <em>key value</em> ) ...<code>)</code>
 </p>
 <p>
-Returns a newly allocated hash table, created as if by <code>make-hash-table</code> using <em>comparator</em>.  For each pair of arguments, an association is added to the new hash table with <em>key</em> as its key and <em>value</em> as its value.  If the implementation supports immutable hash tables, this procedure returns an immutable hash table.
+Returns a newly allocated hash table, created as if by
+<code>make-hash-table</code> using <em>comparator</em>.
+For each pair of arguments, an association is added to the
+new hash table with <em>key</em> as its key and <em>value</em>
+as its value.  If the implementation supports immutable hash
+tables, this procedure returns an immutable hash table.
 </p>
 <p>
 <code>(hash-table-unfold </code><em>stop? mapper successor seed comparator arg</em> ... ]<code>)</code>
 </p>
 <p>
-Create a new hash table as if by <code>make-hash-table</code> using <em>comparator</em> and the <em>args</em>.  If the result of applying the predicate <em>stop?</em> to <em>seed</em> is true, return the hash table.  Otherwise, apply the procedure <em>mapper</em> to <em>seed</em>.  <em>Mapper</em> returns two values, which are inserted into the hash table as the key and the value respectively.  Then get a new seed by applying the procedure <em>successor</em> to <em>seed</em>, and repeat this algorithm.
+Create a new hash table as if by <code>make-hash-table</code> using
+<em>comparator</em> and the <em>args</em>.  If the result of applying
+the predicate <em>stop?</em> to <em>seed</em> is true, return the hash
+table.  Otherwise, apply the procedure <em>mapper</em> to <em>seed</em>.
+<em>Mapper</em> returns two values, which are inserted into the hash
+table as the key and the value respectively.  Then get a new seed by
+applying the procedure <em>successor</em> to <em>seed</em>, and repeat
+this algorithm.
 </p>
 <p>
 <code>(alist-&gt;hash-table </code><em>alist comparator arg</em> ...<code>)</code>
@@ -183,10 +369,15 @@ Create a new hash table as if by <code>make-hash-table</code> using <em>comparat
 <small><code>(alist-&gt;hash-table </code><em>alist equality-predicate</em> [ <em>hash-function</em> ] <em>arg</em> ...<code>)</code>
 </small></p>
 <p>
-Returns a newly allocated hash-table as if by <code>make-hash-table</code> using <em>comparator</em> and the <em>args</em>.  It is then initialized from the associations of <em>alist</em>.  Associations earlier in the list take precedence over those that come later.  The second form is for compatibility with SRFI 69, and is deprecated.
+Returns a newly allocated hash-table as if by <code>make-hash-table</code>
+using <em>comparator</em> and the <em>args</em>.  It is then initialized
+from the associations of <em>alist</em>.  Associations earlier in the
+list take precedence over those that come later.  The second form is
+for compatibility with SRFI 69, and is deprecated.
 </p>
 <h3 id="Hashfunctionsandreflectivity">Hash functions and reflectivity</h3>
-<p>These functions are made part of this SRFI solely for compatibility with SRFI 69,
+<p>These functions are made part of this SRFI solely for compatibility
+with SRFI 69,
 and are deprecated.
 </p>
 <p>
@@ -228,14 +419,19 @@ Returns the equivalence procedure used to create <em>hash-table</em>.
 <small><code>(hash-table-hash-function </code><em>hash-table</em><code>)</code></small>
 </p>
 <p><small>
-Returns the hash function used to create <em>hash-table</em>.  However, if the implementation has replaced the user-specified hash function with an implementation-specific alternative, the implementation may return <code>#f</code> instead.
+Returns the hash function used to create <em>hash-table</em>.
+However, if the implementation has replaced the user-specified
+hash function with an implementation-specific alternative, the
+implementation may return <code>#f</code> instead.
 </small></p>
 <h3 id="Predicates">Predicates</h3>
 <p>
 <code>(hash-table? </code><em>obj</em><code>)</code>
 </p>
 <p>
-Returns <code>#t</code> if <em>obj</em> is a hash table, and <code>#f</code> otherwise.  (R6RS <code>hashtable?</code>; Common Lisp <code>hash-table-p</code>)
+Returns <code>#t</code> if <em>obj</em> is a hash table, and
+<code>#f</code> otherwise.  (R6RS <code>hashtable?</code>;
+Common Lisp <code>hash-table-p</code>)
 </p>
 <p>
 <code>(hash-table-contains? </code><em>hash-table key</em><code>)</code>
@@ -244,25 +440,37 @@ Returns <code>#t</code> if <em>obj</em> is a hash table, and <code>#f</code> oth
 <code>(hash-table-exists? </code><em>hash-table key</em><code>)</code>
 </p>
 </small><p>
-Returns <code>#t</code> if there is any association to <em>key</em> in <em>hash-table</em>, and <code>#f</code> otherwise.  Must execute in expected amortized constant time.  The <code>hash-table-exists</code> procedure is the same as <code>hash-table-contains</code>, is provided for backward compatibility with SRFI 69, and is deprecated.  (R6RS <code>hashtable-contains?</code>)
+Returns <code>#t</code> if there is any association to <em>key</em>
+in <em>hash-table</em>, and <code>#f</code> otherwise.  Must execute
+in expected amortized constant time.  The <code>hash-table-exists</code>
+procedure is the same as <code>hash-table-contains</code>, is provided
+for backward compatibility with SRFI 69, and is deprecated.
+(R6RS <code>hashtable-contains?</code>)
 </p>
 <p>
 <code>(hash-table-empty? </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Returns <code>#t</code> if <em>hash-table</em> contains no associations, and <code>#f</code> otherwise.
+Returns <code>#t</code> if <em>hash-table</em> contains no associations,
+and <code>#f</code> otherwise.
 </p>
 <p>
 <code>(hash-table=? </code><em>value-comparator hash-table<sub>1</sub> hash-table<sub>2</sub></em><code>)</code>
 </p>
 <p>
-Returns <code>#t</code> if <em>hash-table<sub>1</sub></em> and <em>hash-table<sub>2</sub></em> have the same keys (in the sense of their common equality predicate) and each key has the same value (in the sense of <em>value-comparator</em>), and <code>#f</code> otherwise.
+Returns <code>#t</code> if <em>hash-table<sub>1</sub></em> and
+<em>hash-table<sub>2</sub></em> have the same keys (in the sense
+of their common equality predicate) and each key has the same
+value (in the sense of <em>value-comparator</em>), and
+<code>#f</code> otherwise.
 </p>
 <p>
 <code>(hash-table-mutable? </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Returns <code>#t</code> if the hash table is mutable.  implementations may or may not support immutable hash tables.  (R6RS <code>hashtable-mutable?</code>)
+Returns <code>#t</code> if the hash table is mutable.
+implementations may or may not support immutable hash tables.
+(R6RS <code>hashtable-mutable?</code>)
 </p>
 <h3 id="Accessors">Accessors</h3>
 <p>
@@ -272,7 +480,15 @@ The following procedures, given a key, return the corresponding value.
 <code>(hash-table-ref </code><em>hash-table key</em> [ <em>failure</em> [ <em>success</em> ] ]<code>)</code>
 </p>
 <p>
-Extracts the value associated to <em>key</em> in <em>hash-table</em>, invokes the procedure <em>success</em> on it, and returns its result; if <em>success</em> is not provided, then the value itself is returned.  If <em>key</em> is not contained in <em>hash-table</em> and <em>failure</em> is supplied, then <em>failure</em> is invoked on no arguments and its result is returned.  Otherwise, it is an error.  Must execute in expected amortized constant time, not counting the time to call the procedures.  SRFI 69 does not support the <em>success</em> procedure.
+Extracts the value associated to <em>key</em> in <em>hash-table</em>,
+invokes the procedure <em>success</em> on it, and returns its result;
+if <em>success</em> is not provided, then the value itself is returned.
+If <em>key</em> is not contained in <em>hash-table</em> and
+<em>failure</em> is supplied, then <em>failure</em> is invoked
+on no arguments and its result is returned.  Otherwise, it is
+an error.  Must execute in expected amortized constant time,
+not counting the time to call the procedures.  SRFI 69 does
+not support the <em>success</em> procedure.
 </p>
 <p>
 <code>(hash-table-ref/default </code><em>hash-table key default</em><code>)</code>
@@ -290,25 +506,46 @@ Semantically equivalent to, but may be more efficient than, the following code:
 </p>
 <h3 id="Mutators">Mutators</h3>
 <p>
-The following procedures alter the associations in a hash table either unconditionally, or conditionally on the presence or absence of a specified key.  It is an error to add an association to a hash table whose key does not satisfy the type test predicate of the comparator used to create the hash table.
+The following procedures alter the associations in a hash table
+either unconditionally, or conditionally on the presence or absence
+of a specified key.  It is an error to add an association to a hash
+table whose key does not satisfy the type test predicate of the
+comparator used to create the hash table.
 </p>
 <p>
 <code>(hash-table-set! </code><em>hash-table</em> <em>arg</em> ...<code>)</code>
 </p>
 <p>
-Repeatedly mutates <em>hash-table</em>, creating new associations in it.  The <em>args</em> alternate between keys and values. If there is a previous association for a key, it is deleted.  It is an error if the type check procedure of the comparator of <em>hash-table</em>, when invoked on a key, does not return <code>#t</code>. Likewise, it is an error if a key is not a valid argument to the equality predicate of <em>hash-table</em>.  Returns an unspecified value.  Must execute in expected amortized constant time per key.  SRFI 69, R6RS <code>hashtable-set!</code> and Common Lisp <code>(setf gethash)</code> do not handle multiple associations.
+Repeatedly mutates <em>hash-table</em>, creating new associations
+in it.  The <em>args</em> alternate between keys and values. If
+there is a previous association for a key, it is deleted.  It is
+an error if the type check procedure of the comparator of
+<em>hash-table</em>, when invoked on a key, does not return
+<code>#t</code>. Likewise, it is an error if a key is not a
+valid argument to the equality predicate of <em>hash-table</em>.
+Returns an unspecified value.  Must execute in expected amortized
+constant time per key.  SRFI 69, R6RS <code>hashtable-set!</code>
+and Common Lisp <code>(setf gethash)</code> do not handle multiple
+associations.
 </p>
 <p>
 <code>(hash-table-delete! </code><em>hash-table key</em> ...<code>)</code>
 </p>
 <p>
-Deletes any association to each <em>key</em> in <em>hash-table</em> and returns the number of keys that had associations.  Must execute in expected amortized constant time per key.  SRFI 69, R6RS <code>hashtable-delete!</code>, and Common Lisp <code>remhash</code> do not handle multiple associations.
+Deletes any association to each <em>key</em> in <em>hash-table</em>
+and returns the number of keys that had associations.  Must execute
+in expected amortized constant time per key.  SRFI 69, R6RS
+<code>hashtable-delete!</code>, and Common Lisp <code>remhash</code>
+do not handle multiple associations.
 </p>
 <p>
 <code>(hash-table-intern! </code><em>hash-table key</em> <em>failure</em><code>)</code>
 </p>
 <p>
-Effectively invokes <code>hash-table-ref</code> with the given arguments and returns what it returns.  If <em>key</em> was not found in <em>hash-table</em>, its value is set to the result of calling <em>failure</em>.  Must execute in expected amortized constant time.
+Effectively invokes <code>hash-table-ref</code> with the given
+arguments and returns what it returns.  If <em>key</em> was not
+found in <em>hash-table</em>, its value is set to the result of
+calling <em>failure</em>.  Must execute in expected amortized constant time.
 </p>
 <p>
 <code>(hash-table-update! </code><em>hash-table key updater</em> [ <em>failure</em> [ <em>success ] ]<code>)</code>
@@ -322,7 +559,9 @@ Semantically equivalent to, but may be more efficient than, the following code:
 </p>
 </blockquote>
 <p>
-Must execute in expected amortized constant time.  Returns an unspecified value.  (SRFI 69 and R6RS <code>hashtable-update!</code> do not support the <em>success</em> procedure)
+Must execute in expected amortized constant time.  Returns an
+unspecified value.  (SRFI 69 and R6RS <code>hashtable-update!</code>
+do not support the <em>success</em> procedure)
 </p>
 <p>
 <code>(hash-table-update!/default </code><em>hash-table key updater default</em><code>)</code>
@@ -342,45 +581,64 @@ Must execute in expected amortized constant time.  Returns an unspecified value.
 <code>(hash-table-pop! </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Chooses an arbitrary association from <em>hash-table</em> and removes it, returning the key and value as two values.
+Chooses an arbitrary association from <em>hash-table</em> and removes
+it, returning the key and value as two values.
 </p>
 <p>
 <code>(hash-table-clear! </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Delete all the associations from <em>hash-table</em>.  (R6RS <code>hashtable-clear!</code>; Common Lisp <code>clrhash</code>)
+Delete all the associations from <em>hash-table</em>.
+(R6RS <code>hashtable-clear!</code>; Common Lisp <code>clrhash</code>)
 </p>
 <h3 id="Thewholehashtable">The whole hash table</h3>
 <p>
-These procedures process the associations of the hash table in an unspecified order.
+These procedures process the associations of the hash table
+in an unspecified order.
 </p>
 <p>
 <code>(hash-table-size </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Returns the number of associations in <em>hash-table</em> as an exact integer.  Should execute in constant time.  (R6RS <code>hashtable-size</code>; Common Lisp <code>hash-table-count</code>.)
+Returns the number of associations in <em>hash-table</em> as an
+exact integer.  Should execute in constant time.
+(R6RS <code>hashtable-size</code>; Common Lisp <code>hash-table-count</code>.)
 </p>
 <p>
 <code>(hash-table-find </code><em>hash-table proc failure</em><code>)</code>
 </p>
 <p>
-For each association of <em>hash-table</em>, invoke <em>proc</em> on its key and value.   If <em>proc</em> returns true, then <code>hash-table-find</code> returns what <em>proc</em> returns.  If all the calls to <em>proc</em> return <code>#f</code>, return the result of invoking the thunk <em>failure</em>.
+For each association of <em>hash-table</em>, invoke <em>proc</em>
+on its key and value.   If <em>proc</em> returns true, then
+<code>hash-table-find</code> returns what <em>proc</em> returns.
+If all the calls to <em>proc</em> return <code>#f</code>, return
+the result of invoking the thunk <em>failure</em>.
 </p>
 <p>
 <code>(hash-table-count </code><em>hash-table pred</em><code>)</code>
 </p>
 <p>
-For each association of <em>hash-table</em>, invoke <em>pred</em> on its key and value.  Return the number of calls to <em>pred</em> which returned true.
+For each association of <em>hash-table</em>, invoke <em>pred</em>
+on its key and value.  Return the number of calls to <em>pred</em>
+which returned true.
 </p>
 <h3 id="Mappingandfolding">Mapping and folding</h3>
 <p>
-These procedures process the associations of the hash table in an unspecified order.
+These procedures process the associations of the hash table in an
+unspecified order.
 </p>
 <p>
 <code>(hash-table-map </code><em>proc comparator hash-table</em><code>)</code>
 </p>
 <p>
-Returns a newly allocated hash table as if by <code>(make-hash-table </code><em>comparator</em><code>)</code>.  Calls <em>proc</em> for every association in <em>hash-table</em> with the value of the association.  The key of the association and the result of invoking <em>proc</em> are entered into the new hash table.  Note that this is <em>not</em> the result of lifting mapping over the domain of hash tables, but it is considered more useful.
+Returns a newly allocated hash table as if by
+<code>(make-hash-table </code><em>comparator</em><code>)</code>.
+Calls <em>proc</em> for every association in <em>hash-table</em>
+with the value of the association.  The key of the association
+and the result of invoking <em>proc</em> are entered into the
+new hash table.  Note that this is <em>not</em> the result of
+lifting mapping over the domain of hash tables, but it is
+considered more useful.
 </p>
 <p>
 <code>(hash-table-for-each </code><em>proc hash-table</em><code>)</code>
@@ -389,19 +647,31 @@ Returns a newly allocated hash table as if by <code>(make-hash-table </code><em>
 <small><code>(hash-table-walk </code><em>hash-table proc</em><code>)</code>
 </small></p>
 <p>
-Calls <em>proc</em> for every association in <em>hash-table</em> with two arguments: the key of the association and the value of the association.  The value returned by <em>proc</em> is discarded.  Returns an unspecified value.  The <code>hash-table-walk</code> procedure is equivalent to <code>hash-table-for-each</code> with the arguments reversed, is provided for backward compatibility with SRFI 69, and is deprecated.  (Common Lisp <code>maphash</code>)
+Calls <em>proc</em> for every association in <em>hash-table</em>
+with two arguments: the key of the association and the value of
+the association.  The value returned by <em>proc</em> is discarded.
+Returns an unspecified value.  The <code>hash-table-walk</code>
+procedure is equivalent to <code>hash-table-for-each</code> with
+the arguments reversed, is provided for backward compatibility
+with SRFI 69, and is deprecated.  (Common Lisp <code>maphash</code>)
 </p>
 <p>
 <code>(hash-table-map! </code><em>proc hash-table</em><code>)</code>
 </p>
 <p>
-Calls <em>proc</em> for every association in <em>hash-table</em> with two arguments: the key of the association and the value of the association.  The value returned by <em>proc</em> is used to update the value of the association.   Returns an unspecified value.
+Calls <em>proc</em> for every association in <em>hash-table</em>
+with two arguments: the key of the association and the value of
+the association.  The value returned by <em>proc</em> is used to
+update the value of the association.   Returns an unspecified value.
 </p>
 <p>
 <code>(hash-table-map->list </code><em>proc hash-table</em><code>)</code>
 </p>
 <p>
-Calls <em>proc</em> for every association in <em>hash-table</em> with two arguments: the key of the association and the value of the association.  The values returned by the invocations of <em>proc</em> are accumulated into a list, which is returned.  
+Calls <em>proc</em> for every association in <em>hash-table</em>
+with two arguments: the key of the association and the value of
+the association.  The values returned by the invocations of
+<em>proc</em> are accumulated into a list, which is returned.  
 </p>
 <p>
 <code>(hash-table-fold </code><em>proc seed hash-table</em><code>)</code>
@@ -410,32 +680,51 @@ Calls <em>proc</em> for every association in <em>hash-table</em> with two argume
 <small><code>(hash-table-fold </code><em>hash-table proc seed</em><code>)</code>
 </small></p>
 <p>
-Calls <em>proc</em> for every association in <em>hash-table</em> with three arguments: the key of the association, the value of the association, and an accumulated value <em>val</em>.  <em>Val</em> is <em>seed</em> for the first invocation of <em>procedure</em>, and for subsequent invocations of <em>proc</em>, the returned value of the previous invocation.  The value returned by <code>hash-table-fold</code> is the return value of the last invocation of <em>proc</em>.  The order of arguments with <em>hash-table</em> as the first argument is provided for SRFI 69 compatibility, and is deprecated.
+Calls <em>proc</em> for every association in <em>hash-table</em>
+with three arguments: the key of the association, the value of
+the association, and an accumulated value <em>val</em>.
+<em>Val</em> is <em>seed</em> for the first invocation of
+<em>procedure</em>, and for subsequent invocations of <em>proc</em>,
+the returned value of the previous invocation.  The value returned
+by <code>hash-table-fold</code> is the return value of the last
+invocation of <em>proc</em>.  The order of arguments with
+<em>hash-table</em> as the first argument is provided for
+SRFI 69 compatibility, and is deprecated.
 </p>
 <p>
 <code>(hash-table-prune! </code><em>proc hash-table</em><code>)</code>
 </p>
 <p>
-Calls <em>proc</em> for every association in <em>hash-table</em> with two arguments, the key and the value of the association, and removes all associations from <em>hash-table</em> for which <em>proc</em> returns true.  Returns an unspecified value.
+Calls <em>proc</em> for every association in <em>hash-table</em>
+with two arguments, the key and the value of the association, and
+removes all associations from <em>hash-table</em> for which
+<em>proc</em> returns true.  Returns an unspecified value.
 </p>
 <h3 id="Copyingandconversion">Copying and conversion</h3>
 <p>
 <code>(hash-table-copy </code><em>hash-table</em> [ <em>mutable?</em> ]<code>)</code>
 </p>
 <p>
-Returns a newly allocated hash table with the same properties and associations as <em>hash-table</em>. If the second argument is present and is true, the new hash table is mutable.  Otherwise it is immutable provided that the implementation supports immutable hash tables.  SRFI 69 <code>hash-table-copy</code> does not support a second argument.  (R6RS <code>hashtable-copy</code>)
+Returns a newly allocated hash table with the same properties
+and associations as <em>hash-table</em>. If the second argument
+is present and is true, the new hash table is mutable.  Otherwise
+it is immutable provided that the implementation supports immutable
+hash tables.  SRFI 69 <code>hash-table-copy</code> does not support
+a second argument.  (R6RS <code>hashtable-copy</code>)
 </p>
 <p>
 <code>(hash-table-empty-copy </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Returns a newly allocated mutable hash table with the same properties as <em>hash-table</em>, but with no associations.
+Returns a newly allocated mutable hash table with the same properties
+as <em>hash-table</em>, but with no associations.
 </p>
 <p>
 <code>(hash-table-keys </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Returns a newly allocated list of all the keys in <em>hash-table</em>. R6RS <code>hashtable-keys</code> returns a vector.
+Returns a newly allocated list of all the keys in <em>hash-table</em>.
+R6RS <code>hashtable-keys</code> returns a vector.
 </p>
 <p>
 <code>(hash-table-values </code><em>hash-table</em><code>)</code>
@@ -447,13 +736,17 @@ Returns a newly allocated list of all the keys in <em>hash-table</em>.
 <code>(hash-table-entries </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Returns two values, a newly allocated list of all the keys in <em>hash-table</em>and a newly allocated list of all the values in <em>hash-table</em> in the corresponding order.  R6RS <code>hash-table-entries</code> returns vectors.
+Returns two values, a newly allocated list of all the keys in
+<em>hash-table</em>and a newly allocated list of all the values
+in <em>hash-table</em> in the corresponding order.  R6RS
+<code>hash-table-entries</code> returns vectors.
 </p>
 <p>
 <code>(hash-table-&gt;alist </code><em>hash-table</em><code>)</code>
 </p>
 <p>
-Returns an alist with the same associations as <em>hash-table</em> in an unspecified order.
+Returns an alist with the same associations as <em>hash-table</em>
+in an unspecified order.
 </p>
 <h3 id="Hashtablesassets">Hash tables as sets</h3>
 <p>
@@ -463,48 +756,94 @@ Returns an alist with the same associations as <em>hash-table</em> in an unspeci
 <small><code>(hash-table-merge! </code><em>hash-table<sub>1</sub> hash-table<sub>2</sub></em><code>)</code>
 </small></p>
 <p>
-Adds the associations of <em>hash-table<sub>2</sub></em> to <em>hash-table<sub>1</sub></em> and returns <em>hash-table<sub>1</sub></em>.  If a key appears in both hash tables, its value is set to the value appearing in <em>hash-table<sub>1</sub></em>.  Returns <em>hash-table<sub>1</sub></em>.  The <code>hash-table-merge!</code> procedure is the same as <code>hash-table-union!</code>, is provided for compatibility with SRFI 69, and is deprecated.
+Adds the associations of <em>hash-table<sub>2</sub></em> to
+<em>hash-table<sub>1</sub></em> and returns <em>hash-table<sub>1</sub></em>.
+If a key appears in both hash tables, its value is set to the value
+appearing in <em>hash-table<sub>1</sub></em>.  Returns
+<em>hash-table<sub>1</sub></em>.  The <code>hash-table-merge!</code>
+procedure is the same as <code>hash-table-union!</code>, is provided
+for compatibility with SRFI 69, and is deprecated.
 </p>
 <p>
 <code>(hash-table-intersection! </code><em>hash-table<sub>1</sub> hash-table<sub>2</sub></em><code>)</code>
 </p>
 <p>
-Deletes the associations from <em>hash-table<sub>1</sub></em> which don't also appear in <em>hash-table<sub>2</sub></em> and returns <em>hash-table<sub>1</sub></em>.
+Deletes the associations from <em>hash-table<sub>1</sub></em>
+which don't also appear in <em>hash-table<sub>2</sub></em> and
+returns <em>hash-table<sub>1</sub></em>.
 </p>
 <p>
 <code>(hash-table-difference! </code><em>hash-table<sub>1</sub> hash-table<sub>2</sub></em><code>)</code>
 </p>
 <p>
-Deletes the associations of <em>hash-table<sub>1</sub></em> whose keys are also present in <em>hash-table<sub>2</sub></em> and returns <em>hash-table<sub>1</sub></em>.
+Deletes the associations of <em>hash-table<sub>1</sub></em> whose
+keys are also present in <em>hash-table<sub>2</sub></em> and returns
+<em>hash-table<sub>1</sub></em>.
 </p>
 <p>
 <code>(hash-table-xor! </code><em>hash-table<sub>1</sub> hash-table<sub>2</sub></em><code>)</code>
 </p>
 <p>
-Deletes the associations of <em>hash-table<sub>1</sub></em> whose keys are also present in <em>hash-table<sub>2</sub></em>, and then adds the associations of <em>hash-table<sub>2</sub></em> whose keys are not present in <em>hash-table<sub>1</sub></em> to <em>hash-table<sub>1</sub></em>.  Returns <em>hash-table<sub>1</sub></em>.
+Deletes the associations of <em>hash-table<sub>1</sub></em> whose
+keys are also present in <em>hash-table<sub>2</sub></em>, and then
+adds the associations of <em>hash-table<sub>2</sub></em> whose keys
+are not present in <em>hash-table<sub>1</sub></em> to
+<em>hash-table<sub>1</sub></em>.  Returns <em>hash-table<sub>1</sub></em>.
 </p>
 <h1>Implementation</h1>
 
 <p>
-The current sample implementation is in the code repository of this SRFI.  It is easily layered over any hash table implementation that supports either SRFI 69 or R6RS.  The sample implementation is built directly on top of the <code>(r6rs hashtables)</code> library available in the same repository, whose portable implementation uses <code>(rnrs hashtables)</code> if that library is available, or SRFI 69 if that is available, or a slightly improved version of the SRFI 69 sample implementation as a fallback.
+The current sample implementation is in the code repository of this
+SRFI.  It is easily layered over any hash table implementation that
+supports either SRFI 69 or R6RS.  The sample implementation is built
+directly on top of the <code>(r6rs hashtables)</code> library available
+in the same repository, whose portable implementation uses
+<code>(rnrs hashtables)</code> if that library is available,
+or SRFI 69 if that is available, or a slightly improved version
+of the SRFI 69 sample implementation as a fallback.
 </p>
 <p>
-The procedures in this SRFI are currently in the <code>(in-progress hash tables)</code> library.  This will change.
+The procedures in this SRFI are currently in the <code>(in-progress
+hash tables)</code> library.  This will change.
 </p>
 <p>
-There also exists an <a href="https://github.com/larcenists/larceny/blob/master/lib/SRFI/srfi-69.sch">implementation of SRFI 69</a> on top of  <code>(rnrs hashtables)</code>, which shows how to construct an implementation of SRFI 69 that would be fully compatible with the sample implementation of this SRFI.
+There also exists an
+<a href="https://github.com/larcenists/larceny/blob/master/lib/SRFI/srfi-69.sch">implementation of SRFI 69</a>
+on top of  <code>(rnrs hashtables)</code>, which shows how to construct
+an implementation of SRFI 69 that would be fully compatible with the
+sample implementation of this SRFI.
 </p>
-<p>The sample implementation never calls any hash function with two arguments.</p>
+<p>The sample implementation never calls any hash function with two
+arguments.</p>
 <p>
-The original intention was to make it possible to implement this SRFI on top of all the native hash table systems mentioned in <a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Sources">Sources</a> above as well.  However, this turned out not to be practical for the following reasons:
+The original intention was to make it possible to implement this SRFI
+on top of all the native hash table systems mentioned in
+<a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Sources">Sources</a>
+above as well.  However, this turned out not to be practical for the
+following reasons:
 </p>
-<ul><li>Gauche does not support arbitrary equality predicates, only <code>eq?</code>, <code>eqv?</code>, <code>equal?</code>, and <code>string=?</code>.
-</li></ul><ul><li>S7 does not support arbitrary equality predicates: the implementation chooses a predicate based on the nature of the keys.
-</li></ul><ul><li>SISC, Scheme48/scsh, RScheme, Scheme 9, and Rep do not document any any way of inspecting a hash table to determine its equality predicates and hash functions so that it can be re-created.
+<ul><li>Gauche does not support arbitrary equality predicates, only
+<code>eq?</code>, <code>eqv?</code>, <code>equal?</code>, and
+<code>string=?</code>.
+</li></ul><ul><li>S7 does not support arbitrary equality predicates:
+the implementation chooses a predicate based on the nature of the keys.
+</li></ul><ul><li>SISC, Scheme48/scsh, RScheme, Scheme 9, and Rep do
+not document any any way of inspecting a hash table to determine its
+equality predicates and hash functions so that it can be re-created.
 </li></ul><ul><li>SLIB hash tables are vectors, not disjoint objects.
-</li></ul><ul><li>FemtoLisp supports only <code>equal?</code> as the equality predicate.
+</li></ul><ul><li>FemtoLisp supports only <code>equal?</code> as the
+equality predicate.
 </li></ul><p>
-Native Guile hash tables are a special case.  The equivalents of <code>hash-table-ref/default</code>, <code>hash-table-set!</code>, and <code>hash-table-delete</code> require the equality predicate and hash function to be passed to them explicitly (although there are utility functions for <code>eq?</code>, <code>eqv?</code>, and <code>equal?</code> hash tables).  Consequently, hash tables corresponding to this SRFI would have to be records containing a Guile hash table, an equality predicate, and a hash function, which means they could not interoperate directly with native Guile hash tables.
+Native Guile hash tables are a special case.  The equivalents of
+<code>hash-table-ref/default</code>, <code>hash-table-set!</code>,
+and <code>hash-table-delete</code> require the equality predicate
+and hash function to be passed to them explicitly (although there
+are utility functions for <code>eq?</code>, <code>eqv?</code>,
+and <code>equal?</code> hash tables).  Consequently, hash tables
+corresponding to this SRFI would have to be records containing a
+Guile hash table, an equality predicate, and a hash function,
+which means they could not interoperate directly with native
+Guile hash tables.
 </p>
 
 <h1>Copyright</h1>
