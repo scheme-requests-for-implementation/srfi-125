@@ -208,6 +208,10 @@ spirited review.
 <h1>Specification</h1>
 
 <p>
+The procedures in this SRFI are in the <code>(srfi 125)</code> library
+(or <code>(srfi :125)</code> on R6RS).
+</p>
+<p>
 All references to "executing in expected amortized constant time"
 presuppose that a satisfactory hash function is available.  Arbitrary
 or impure hash functions can make a hash of any implementation.
@@ -258,21 +262,17 @@ or <code>equal?</code> is almost always unsafe.
 <code>make-hash-table</code>, <code>hash-table</code>,
 <code>hash-table-unfold</code>, <code>alist-&gt;hash-table</code>
 </li></ul>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashfunctionsandreflectivity">Hash functions and reflectivity</a>:
-<code>hash</code>, <code>string-hash</code>, <code>string-ci-hash</code>,
-<code>hash-by-identity</code>
-</li></ul>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Predicates">Predicates</a>:
 <code>hash-table?</code>, <code>hash-table-contains?</code>,
 <code>hash-table-empty?</code>, <code>hash-table=?</code>,
-<code>hash-table-immutable?</code>
+<code>hash-table-mutable?</code>
 </li></ul>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Accessors">Accessors</a>:
 <code>hash-table-ref</code>, <code>hash-table-ref/default</code>
 </li></ul>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mutators">Mutators</a>:
-<code>hash-table-set!</code>, <code>hash-table-set-entries!</code>,
-<code>hash-table-delete!</code>, <code>hash-table-delete-keys!</code>,
+<code>hash-table-set!</code>,
+<code>hash-table-delete!</code>,
 <code>hash-table-intern!</code>, <code>hash-table-update!</code>,
 <code>hash-table-update!/default</code>, <code>hash-table-push!</code>,
 <code>hash-table-pop!</code>, <code>hash-table-clear!</code>
@@ -295,6 +295,22 @@ or <code>equal?</code> is almost always unsafe.
 <code>hash-table-union!</code>, <code>hash-table-intersection!</code>,
 <code>hash-table-difference!</code>, <code>hash-table-xor!</code>
 </li></ul>
+
+<p>
+Several deprecated procedures are provided as well, including
+<a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashfunctionsandreflectivity">hash functions</a>
+compatible with
+<a href="http://srfi.schemers.org/srfi-69/srfi-69.html">SRFI 69</a>:
+<code>hash</code>, <code>string-hash</code>, <code>string-ci-hash</code>, and
+<code>hash-by-identity</code>.
+Two of these hash functions,
+<code>string-hash</code> and <code>string-ci-hash</code>,
+are incompatible with hash functions of the same name exported by
+<a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a> and
+<a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>.
+</li></ul>
+</p>
+
 <h3 id="Constructors">Constructors</h3>
 <p>
 <code>(make-hash-table </code><em>comparator</em> [ <em>arg</em> ... ]<code>)</code>
@@ -307,6 +323,13 @@ Returns a newly allocated hash table whose equality predicate and
 hash function are extracted from <em>comparator</em>.  Alternatively,
 for backward compatibility with SRFI 69 the equality predicate and
 hash function can be passed as separate arguments; this usage is deprecated.
+</p>
+<p>
+As mentioned above, implementations are free to use an appropriate
+implementation-dependent hash function instead of the
+<em>equality-predicate</em> if that predicate
+(or the equality predicate packaged within the <em>comparator</em>)
+is a refinement of the <code>equal?</code> predicate.
 </p>
 <p>
 If an equality predicate rather than a comparator is provided,
@@ -339,7 +362,7 @@ argument, none of these arguments can be procedures.
 and <code>make-hashtable</code>; Common Lisp <code>make-hash-table</code>)
 </p>
 <p>
-<code>(hash-table </code><em>comparator</em> ( <em>key value</em> ) ...<code>)</code>
+<code>(hash-table </code><em>comparator</em> [ <em>key value</em> ] ...<code>)</code>
 </p>
 <p>
 Returns a newly allocated hash table, created as if by
@@ -442,8 +465,8 @@ Common Lisp <code>hash-table-p</code>)
 </small><p>
 Returns <code>#t</code> if there is any association to <em>key</em>
 in <em>hash-table</em>, and <code>#f</code> otherwise.  Must execute
-in expected amortized constant time.  The <code>hash-table-exists</code>
-procedure is the same as <code>hash-table-contains</code>, is provided
+in expected amortized constant time.  The <code>hash-table-exists?</code>
+procedure is the same as <code>hash-table-contains?</code>, is provided
 for backward compatibility with SRFI 69, and is deprecated.
 (R6RS <code>hashtable-contains?</code>)
 </p>
@@ -469,7 +492,7 @@ value (in the sense of <em>value-comparator</em>), and
 </p>
 <p>
 Returns <code>#t</code> if the hash table is mutable.
-implementations may or may not support immutable hash tables.
+Implementations may or may not support immutable hash tables.
 (R6RS <code>hashtable-mutable?</code>)
 </p>
 <h3 id="Accessors">Accessors</h3>
@@ -794,27 +817,18 @@ are not present in <em>hash-table<sub>1</sub></em> to
 
 <p>
 The current sample implementation is in the code repository of this
-SRFI.  It is easily layered over any hash table implementation that
-supports either SRFI 69 or R6RS.  The sample implementation is built
-directly on top of the <code>(r6rs hashtables)</code> library available
-in the same repository, whose portable implementation uses
-<code>(rnrs hashtables)</code> if that library is available,
-or SRFI 69 if that is available, or a slightly improved version
-of the SRFI 69 sample implementation as a fallback.
+SRFI.  It relies upon
+<a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>
+and
+<a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>,
+but the sample implementation for SRFI 126
+is easily layered over any hash table implementation that
+supports either SRFI 69 or R6RS.
 </p>
 <p>
-The procedures in this SRFI are currently in the <code>(in-progress
-hash tables)</code> library.  This will change.
+The sample implementation of this SRFI never calls any hash function with two
+arguments.
 </p>
-<p>
-There also exists an
-<a href="https://github.com/larcenists/larceny/blob/master/lib/SRFI/srfi-69.sch">implementation of SRFI 69</a>
-on top of  <code>(rnrs hashtables)</code>, which shows how to construct
-an implementation of SRFI 69 that would be fully compatible with the
-sample implementation of this SRFI.
-</p>
-<p>The sample implementation never calls any hash function with two
-arguments.</p>
 <p>
 The original intention was to make it possible to implement this SRFI
 on top of all the native hash table systems mentioned in
