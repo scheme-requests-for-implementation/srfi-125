@@ -58,10 +58,6 @@ the presence of concurrent mutation of the whole hash table
 </li></ul>
 
 
-<h1>Issues</h1>
-
-<p>None at present.</p>
-
 <h1>Rationale</h1>
 
 <p>
@@ -96,9 +92,10 @@ hash function into a single bundle.
 <p>
 This SRFI is downward compatible with SRFI 69.  Some procedures have
 been given new preferred names for compatibility with other SRFIs,
-but in all cases the SRFI 69 names have been retained as synonyms.
-They appear in this SRFI <small>in small print</small>.
-There is one exception: the reflective procedure
+but in all cases the SRFI 69 names have been retained as deprecated synonyms;
+implementations must still provide them, however.
+They appear in this SRFI <small>in small print</small>.</p>
+<p>There is one absolute incompatibility with SRFI 69: the reflective procedure
 <code>hash-table-hash-function</code> may return <code>#f</code>,
 which is not permitted by SRFI 69.  See the specification for details.</p>
 <h3 id="R6RScompatibility">R6RS compatibility</h3>
@@ -110,7 +107,7 @@ difference is that R6RS <code>hashtable-values</code> and
 SRFI <code>hash-table-values</code> and <code>hash-table-entries</code>
 return lists.  This SRFI adopts SRFI 69's term <code>hash-table</code>
 rather than R6RS's <code>hashtable</code>, because of the universal
-use of "hash table" rather than "hashtable" in other languages and
+use of "hash table" rather than "hashtable" in other computer languages and
 in technical prose generally.  Besides, the English word
 <em>hashtable</em> obviously means something that can be ... hashted.
 </p>
@@ -205,6 +202,8 @@ what I have done with it.  Thanks to Will Clinger for providing the
 sample implementation, and to Taylan Ulrich Bayırlı/Kammer for his
 spirited review.
 </p>
+<p>I also acknowledge the members of the SRFI 125, 126, and 128 mailing lists,
+especially Takashi Kato, Alex Shinn, Shiro Kawai, and Per Bothner.
 
 <h1>Specification</h1>
 
@@ -265,6 +264,7 @@ or <code>equal?</code> is almost always unsafe.
 </li></ul>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Predicates">Predicates</a>:
 <code>hash-table?</code>, <code>hash-table-contains?</code>,
+<code>hash-table-exists?</code> (deprecated),
 <code>hash-table-empty?</code>, <code>hash-table=?</code>,
 <code>hash-table-mutable?</code>
 </li></ul>
@@ -275,7 +275,7 @@ or <code>equal?</code> is almost always unsafe.
 <code>hash-table-set!</code>,
 <code>hash-table-delete!</code>,
 <code>hash-table-intern!</code>, <code>hash-table-update!</code>,
-<code>hash-table-update!/default</code>, <code>hash-table-push!</code>,
+<code>hash-table-update!/default</code>,
 <code>hash-table-pop!</code>, <code>hash-table-clear!</code>
 </li></ul>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Thewholehashtable">The whole hash table</a>:
@@ -285,6 +285,7 @@ or <code>equal?</code> is almost always unsafe.
 </li></ul>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mappingandfolding">Mapping and folding</a>:
 <code>hash-table-map</code>, <code>hash-table-for-each</code>,
+<code>hash-table-walk</code> (deprecated),
 <code>hash-table-map!</code>, <code>hash-table-map->list</code>,
 <code>hash-table-fold</code>, <code>hash-table-prune!</code>
 </li></ul>
@@ -293,22 +294,16 @@ or <code>equal?</code> is almost always unsafe.
 <code>hash-table-&gt;alist</code>
 </li></ul>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashtablesassets">Hash tables as sets</a>:
-<code>hash-table-union!</code>, <code>hash-table-intersection!</code>,
+<code>hash-table-union!</code>,
+<code>hash-table-merge!</code> (deprecated),
+<code>hash-table-intersection!</code>,
 <code>hash-table-difference!</code>, <code>hash-table-xor!</code>
 </li></ul>
+<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashfunctionsandreflectivity">Hash functions and reflectivity</a> (deprecated):
+<code>hash</code>, <code>string-hash</code>, <code>string-ci-hash</code>,
+<code>hash-by-identity</code>, <code>hash-table-equivalence-function</code>,
+<code>hash-table-hash-function</code>
 
-<p>
-Several deprecated procedures are provided as well, including
-<a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashfunctionsandreflectivity">hash functions</a>
-compatible with
-<a href="http://srfi.schemers.org/srfi-69/srfi-69.html">SRFI 69</a>:
-<code>hash</code>, <code>string-hash</code>, <code>string-ci-hash</code>, and
-<code>hash-by-identity</code>.
-Two of these hash functions,
-<code>string-hash</code> and <code>string-ci-hash</code>,
-are incompatible with hash functions of the same name exported by
-<a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a> and
-<a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>.
 </li></ul>
 </p>
 
@@ -399,55 +394,6 @@ from the associations of <em>alist</em>.  Associations earlier in the
 list take precedence over those that come later.  The second form is
 for compatibility with SRFI 69, and is deprecated.
 </p>
-<h3 id="Hashfunctionsandreflectivity">Hash functions and reflectivity</h3>
-<p>These functions are made part of this SRFI solely for compatibility
-with SRFI 69,
-and are deprecated.
-</p>
-<p>
-<small><code>(hash </code><em>obj</em><code>)</code>
-</small></p>
-<p><small>
-The same as SRFI 128's <code>default-hash</code> procedure,
-except that it must accept (and should ignore) an optional second argument.
-</small></p>
-<p><small><code>(string-hash </code><em>obj</em><code>)</code></small>
-</p>
-<p><small>
-The same as SRFI 128's <code>string-hash</code> procedure,
-except that it must accept (and should ignore) an optional second argument.
-</small></p>
-<p><small><code>(string-ci-hash </code><em>obj</em><code>)</code></small>
-</p>
-<p><small>
-The same as SRFI 128's <code>string-ci-hash</code> procedure,
-except that it must accept (and should ignore) an optional second argument.
-</small></p> 
-<p>
-<small><code>(hash-by-identity </code><em>obj</em><code>)</code></small>
-</p>
-<p><small>
-The same as SRFI 128's <code>default-hash</code> procedure,
-except that it must accept (and should ignore) an optional second argument.
-However, if the implementation replaces the hash function associated
-with the <code>eq?</code> predicate with an implementation-dependent
-alternative, it is an error to call this procedure at all.
-</small></p>
-<p>
-<small><code>(hash-table-equivalence-function </code><em>hash-table</em><code>)</code></small>
-</p>
-<p><small>
-Returns the equivalence procedure used to create <em>hash-table</em>.
-</small></p>
-<p>
-<small><code>(hash-table-hash-function </code><em>hash-table</em><code>)</code></small>
-</p>
-<p><small>
-Returns the hash function used to create <em>hash-table</em>.
-However, if the implementation has replaced the user-specified
-hash function with an implementation-specific alternative, the
-implementation may return <code>#f</code> instead.
-</small></p>
 <h3 id="Predicates">Predicates</h3>
 <p>
 <code>(hash-table? </code><em>obj</em><code>)</code>
@@ -466,9 +412,9 @@ Common Lisp <code>hash-table-p</code>)
 </small><p>
 Returns <code>#t</code> if there is any association to <em>key</em>
 in <em>hash-table</em>, and <code>#f</code> otherwise.  Must execute
-in expected amortized constant time.  The <code>hash-table-exists?</code>
+in expected amortized constant time.  <small>The <code>hash-table-exists?</code>
 procedure is the same as <code>hash-table-contains?</code>, is provided
-for backward compatibility with SRFI 69, and is deprecated.
+for backward compatibility with SRFI 69, and is deprecated.</small>
 (R6RS <code>hashtable-contains?</code>)
 </p>
 <p>
@@ -629,6 +575,28 @@ exact integer.  Should execute in constant time.
 (R6RS <code>hashtable-size</code>; Common Lisp <code>hash-table-count</code>.)
 </p>
 <p>
+<code>(hash-table-keys </code><em>hash-table</em><code>)</code>
+</p>
+<p>
+Returns a newly allocated list of all the keys in <em>hash-table</em>.
+R6RS <code>hashtable-keys</code> returns a vector.
+</p>
+<p>
+<code>(hash-table-values </code><em>hash-table</em><code>)</code>
+</p>
+<p>
+Returns a newly allocated list of all the keys in <em>hash-table</em>.
+</p>
+<p>
+<code>(hash-table-entries </code><em>hash-table</em><code>)</code>
+</p>
+<p>
+Returns two values, a newly allocated list of all the keys in
+<em>hash-table</em> and a newly allocated list of all the values
+in <em>hash-table</em> in the corresponding order.  R6RS
+<code>hash-table-entries</code> returns vectors.
+</p>
+<p>
 <code>(hash-table-find </code><em>hash-table proc failure</em><code>)</code>
 </p>
 <p>
@@ -674,10 +642,10 @@ considered more useful.
 Calls <em>proc</em> for every association in <em>hash-table</em>
 with two arguments: the key of the association and the value of
 the association.  The value returned by <em>proc</em> is discarded.
-Returns an unspecified value.  The <code>hash-table-walk</code>
+Returns an unspecified value.  <small>The <code>hash-table-walk</code>
 procedure is equivalent to <code>hash-table-for-each</code> with
 the arguments reversed, is provided for backward compatibility
-with SRFI 69, and is deprecated.  (Common Lisp <code>maphash</code>)
+with SRFI 69, and is deprecated.</small>  (Common Lisp <code>maphash</code>)
 </p>
 <p>
 <code>(hash-table-map! </code><em>proc hash-table</em><code>)</code>
@@ -711,9 +679,9 @@ the association, and an accumulated value <em>val</em>.
 <em>procedure</em>, and for subsequent invocations of <em>proc</em>,
 the returned value of the previous invocation.  The value returned
 by <code>hash-table-fold</code> is the return value of the last
-invocation of <em>proc</em>.  The order of arguments with
+invocation of <em>proc</em>.  <small>The order of arguments with
 <em>hash-table</em> as the first argument is provided for
-SRFI 69 compatibility, and is deprecated.
+SRFI 69 compatibility, and is deprecated.</small>
 </p>
 <p>
 <code>(hash-table-prune! </code><em>proc hash-table</em><code>)</code>
@@ -744,28 +712,6 @@ Returns a newly allocated mutable hash table with the same properties
 as <em>hash-table</em>, but with no associations.
 </p>
 <p>
-<code>(hash-table-keys </code><em>hash-table</em><code>)</code>
-</p>
-<p>
-Returns a newly allocated list of all the keys in <em>hash-table</em>.
-R6RS <code>hashtable-keys</code> returns a vector.
-</p>
-<p>
-<code>(hash-table-values </code><em>hash-table</em><code>)</code>
-</p>
-<p>
-Returns a newly allocated list of all the keys in <em>hash-table</em>.
-</p>
-<p>
-<code>(hash-table-entries </code><em>hash-table</em><code>)</code>
-</p>
-<p>
-Returns two values, a newly allocated list of all the keys in
-<em>hash-table</em>and a newly allocated list of all the values
-in <em>hash-table</em> in the corresponding order.  R6RS
-<code>hash-table-entries</code> returns vectors.
-</p>
-<p>
 <code>(hash-table-&gt;alist </code><em>hash-table</em><code>)</code>
 </p>
 <p>
@@ -784,9 +730,9 @@ Adds the associations of <em>hash-table<sub>2</sub></em> to
 <em>hash-table<sub>1</sub></em> and returns <em>hash-table<sub>1</sub></em>.
 If a key appears in both hash tables, its value is set to the value
 appearing in <em>hash-table<sub>1</sub></em>.  Returns
-<em>hash-table<sub>1</sub></em>.  The <code>hash-table-merge!</code>
+<em>hash-table<sub>1</sub></em>.  <small>The <code>hash-table-merge!</code>
 procedure is the same as <code>hash-table-union!</code>, is provided
-for compatibility with SRFI 69, and is deprecated.
+for compatibility with SRFI 69, and is deprecated.</small>
 </p>
 <p>
 <code>(hash-table-intersection! </code><em>hash-table<sub>1</sub> hash-table<sub>2</sub></em><code>)</code>
@@ -814,6 +760,57 @@ adds the associations of <em>hash-table<sub>2</sub></em> whose keys
 are not present in <em>hash-table<sub>1</sub></em> to
 <em>hash-table<sub>1</sub></em>.  Returns <em>hash-table<sub>1</sub></em>.
 </p>
+<h3 id="Hashfunctionsandreflectivity">Hash functions and reflectivity</h3>
+<p><small>These functions are made part of this SRFI solely for compatibility
+with SRFI 69,
+and are deprecated.
+</small></p>
+<p>
+<small><code>(hash </code><em>obj</em><code>)</code>
+</small></p>
+<p><small>
+The same as SRFI 128's <code>default-hash</code> procedure,
+except that it must accept (and should ignore) an optional second argument.
+</small></p>
+<p><small><code>(string-hash </code><em>obj</em><code>)</code></small>
+</p>
+<p><small>
+Similar to SRFI 128's <code>string-hash</code> procedure,
+except that it must accept (and should ignore) an optional second argument.
+</small></p>
+<p><small><code>(string-ci-hash </code><em>obj</em><code>)</code></small>
+</p>
+<p><small>
+Similar to SRFI 128's <code>string-ci-hash</code> procedure,
+except that it must accept (and should ignore) an optional second argument.
+It is incompatible with the procedure of the same name exported by SRFI 128
+and <http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
+</small></p> 
+<p>
+<small><code>(hash-by-identity </code><em>obj</em><code>)</code></small>
+</p>
+<p><small>
+The same as SRFI 128's <code>default-hash</code> procedure,
+except that it must accept (and should ignore) an optional second argument.
+However, if the implementation replaces the hash function associated
+with the <code>eq?</code> predicate with an implementation-dependent
+alternative, it is an error to call this procedure at all.
+</small></p>
+<p>
+<small><code>(hash-table-equivalence-function </code><em>hash-table</em><code>)</code></small>
+</p>
+<p><small>
+Returns the equivalence procedure used to create <em>hash-table</em>.
+</small></p>
+<p>
+<small><code>(hash-table-hash-function </code><em>hash-table</em><code>)</code></small>
+</p>
+<p><small>
+Returns the hash function used to create <em>hash-table</em>.
+However, if the implementation has replaced the user-specified
+hash function with an implementation-specific alternative, the
+implementation may return <code>#f</code> instead.
+</small></p>
 <h1>Implementation</h1>
 
 <p>
