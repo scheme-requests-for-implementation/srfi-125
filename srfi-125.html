@@ -324,9 +324,10 @@ hash function can be passed as separate arguments; this usage is deprecated.
 <p>
 As mentioned above, implementations are free to use an appropriate
 implementation-dependent hash function instead of the
-<em>equality-predicate</em> if that predicate
-(or the equality predicate packaged within the <em>comparator</em>)
+specified hash function, provided that the specified equality predicate
 is a refinement of the <code>equal?</code> predicate.
+This applies whether the hash function and equality predicate are passed
+as separate arguments or packaged up into a constructor.
 </p>
 <p>
 If an equality predicate rather than a comparator is provided,
@@ -368,6 +369,8 @@ For each pair of arguments, an association is added to the
 new hash table with <em>key</em> as its key and <em>value</em>
 as its value.  If the implementation supports immutable hash
 tables, this procedure returns an immutable hash table.
+If the same key (in the sense of the equality predicate) is
+specified more than once, it is an error.
 </p>
 <p>
 <code>(hash-table-unfold </code><em>stop? mapper successor seed comparator arg</em> ... ]<code>)</code>
@@ -488,7 +491,8 @@ comparator used to create the hash table.
 </p>
 <p>
 Repeatedly mutates <em>hash-table</em>, creating new associations
-in it.  The <em>args</em> alternate between keys and values. If
+in it by processing the arguments from left to right.
+The <em>args</em> alternate between keys and values.  Whenever
 there is a previous association for a key, it is deleted.  It is
 an error if the type check procedure of the comparator of
 <em>hash-table</em>, when invoked on a key, does not return
@@ -841,7 +845,7 @@ following reasons:
 </li></ul><ul><li>S7 does not support arbitrary equality predicates:
 the implementation chooses a predicate based on the nature of the keys.
 </li></ul><ul><li>SISC, Scheme48/scsh, RScheme, Scheme 9, and Rep do
-not document any any way of inspecting a hash table to determine its
+not document any way of inspecting a hash table to determine its
 equality predicates and hash functions so that it can be re-created.
 </li></ul><ul><li>SLIB hash tables are vectors, not disjoint objects.
 </li></ul><ul><li>FemtoLisp supports only <code>equal?</code> as the
@@ -884,7 +888,7 @@ DEALINGS IN THE SOFTWARE.
     <address>Editor: <a href="mailto:srfi-editors at srfi dot schemers dot org">Arthur A. Gleckler</a></address>
 <!--Created: Tue Sep 29 19:20:08 EDT 1998 -->
 <!--hhmts start -->
-Last modified: Sun Aug  6 20:09:00 EDT 2015
+Last modified: Sat, May  7, 2016  9:57:02 PM
 <!--hhmts end -->
 
 </body></html>
