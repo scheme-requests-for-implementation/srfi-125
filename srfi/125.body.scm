@@ -432,17 +432,11 @@
 
 ;;; Mapping and folding.
 
-(define (hash-table-map proc comparator merger ht)
+(define (hash-table-map proc comparator ht)
   (let ((result (make-hash-table comparator)))
     (hash-table-for-each
      (lambda (key val)
-       (call-with-values
-        (lambda () (proc key val))
-        (lambda (key1 val1)
-          (let ((key1 (if (hashtable-contains? result key1)
-                          (merger key val key1 val1)
-                          key1)))
-            (hashtable-set! result key1 val1)))))
+       (hash-table-set! result key (proc val)))
      ht)
     result))
 
