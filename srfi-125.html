@@ -603,7 +603,7 @@ in <em>hash-table</em> in the corresponding order.  R6RS
 <code>hash-table-entries</code> returns vectors.
 </p>
 <p>
-<code>(hash-table-find </code><em>hash-table proc failure</em><code>)</code>
+<code>(hash-table-find </code><em>proc hash-table failure</em><code>)</code>
 </p>
 <p>
 For each association of <em>hash-table</em>, invoke <em>proc</em>
@@ -613,7 +613,7 @@ If all the calls to <em>proc</em> return <code>#f</code>, return
 the result of invoking the thunk <em>failure</em>.
 </p>
 <p>
-<code>(hash-table-count </code><em>hash-table pred</em><code>)</code>
+<code>(hash-table-count </code><em>pred hash-table</em><code>)</code>
 </p>
 <p>
 For each association of <em>hash-table</em>, invoke <em>pred</em>
