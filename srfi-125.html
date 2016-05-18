@@ -169,7 +169,7 @@ version of <code>table-search</code> in
 </li></ul><ul><li>The procedures <code>hash-table=?</code> and
 <code>hash-table-map</code> were suggested by
 <a href="http://hackage.haskell.org/packages/archive/containers/0.5.2.1/doc/html/Data-Map-Strict.html">Haskell's Data.Map.Strict module</a>.
-</li></ul><ul><li>The procedure <code>hash-table-map->list</code> is from
+</li></ul><ul><li>The procedure <code>hash-table-map-&gt;list</code> is from
 <a href="http://www.gnu.org/software/guile/manual/html_node/Hash-Table-Reference.html">Guile</a>.
 </li></ul><p>
 The procedures <code>hash-table-empty?</code>,
@@ -229,7 +229,7 @@ operation: it may be called zero, one, or more times.
 It is an error if the procedure argument of <code>hash-table-find</code>,
 <code>hash-table-count</code>, <code>hash-table-map</code>,
 <code>hash-table-for-each</code>, <code>hash-table-map!</code>,
-<code>hash-table-map->list</code>, <code>hash-table-fold</code>
+<code>hash-table-map-&gt;list</code>, <code>hash-table-fold</code>
 or <code>hash-table-prune!</code> mutates the hash table being walked.
 </p>
 <p>
@@ -289,7 +289,7 @@ or <code>equal?</code> is almost always unsafe.
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mappingandfolding">Mapping and folding</a>:
 <code>hash-table-map</code>, <code>hash-table-for-each</code>,
 <code>hash-table-walk</code> (deprecated),
-<code>hash-table-map!</code>, <code>hash-table-map->list</code>,
+<code>hash-table-map!</code>, <code>hash-table-map-&gt;list</code>,
 <code>hash-table-fold</code>, <code>hash-table-prune!</code>
 </li></ul>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Copyingandconversion">Copying and conversion</a>:
@@ -664,7 +664,7 @@ the association.  The value returned by <em>proc</em> is used to
 update the value of the association.   Returns an unspecified value.
 </p>
 <p>
-<code>(hash-table-map->list </code><em>proc hash-table</em><code>)</code>
+<code>(hash-table-map-&gt;list </code><em>proc hash-table</em><code>)</code>
 </p>
 <p>
 Calls <em>proc</em> for every association in <em>hash-table</em>
