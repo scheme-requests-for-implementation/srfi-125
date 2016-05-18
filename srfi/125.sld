@@ -21,7 +21,6 @@
    hash-table-intern!
    hash-table-update!
    hash-table-update!/default
-   hash-table-push!
    hash-table-pop!
    hash-table-clear! 
 
