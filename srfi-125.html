@@ -254,12 +254,6 @@ with suitable warnings against inappropriate uses.</p>
 <p>It is an error to mutate a key during or after its insertion
 into a hash table in such a way that the hash function of the
 table will return a different result when applied to that key.
-In combination with the previous rule, this means that mutating
-a key in a hash table based on <code>eq-comparator</code> or
-<code>eqv-comparator</code>, or the equality predicates
-<code>eq?</code> or <code>eqv?</code>, may be possible,
-but mutating a key in a hash table based on <code>equal-comparator</code>
-or <code>equal?</code> is almost always unsafe.
 </p>
 <h3 id="Index">Index</h3>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Constructors">Constructors</a>:
