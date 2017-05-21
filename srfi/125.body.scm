@@ -340,9 +340,13 @@
                         (cons ht rest))))))))
 
 (define (hash-table-delete! ht . keys)
-  (for-each (lambda (key)
-              (hashtable-delete! ht key))
-            keys))
+  (let ((cnt 0))
+        (for-each (lambda (k) 
+                    (when (hashtable-contains? ht k)
+                      (set! cnt (+ 1 cnt))
+                      (hashtable-delete! ht k)))
+                  keys)
+        cnt))
 
 (define (hash-table-intern! ht key failure)
   (if (hashtable-contains? ht key)
