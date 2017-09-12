@@ -626,6 +626,9 @@ new hash table.  Note that this is <em>not</em> the result of
 lifting mapping over the domain of hash tables, but it is
 considered more useful.
 </p>
+<p>If <em>comparator</em> recognizes multiple keys in the <em>hash-table</em>
+as equivalent, any one of such associations is taken.
+</p>
 <p>
 <code>(hash-table-for-each </code><em>proc hash-table</em><code>)</code>
 </p>
