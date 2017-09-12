@@ -366,7 +366,8 @@
         (lambda (key value)
           (hash-table-delete! ht key)
           (return key value))
-        ht))))
+        ht)
+      (error "hash-table-pop!: hash table is empty" ht))))
 
 (define (hash-table-clear! ht)
   (hashtable-clear! ht))
