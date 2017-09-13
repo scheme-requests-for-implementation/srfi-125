@@ -362,7 +362,7 @@ If the same key (in the sense of the equality predicate) is
 specified more than once, it is an error.
 </p>
 <p>
-<code>(hash-table-unfold </code><em>stop? mapper successor seed comparator arg</em> ... ]<code>)</code>
+<code>(hash-table-unfold </code><em>stop? mapper successor seed comparator arg</em> ... <code>)</code>
 </p>
 <p>
 Create a new hash table as if by <code>make-hash-table</code> using
@@ -549,6 +549,9 @@ Chooses an arbitrary association from <em>hash-table</em> and removes
 it, returning the key and value as two values.
 </p>
 <p>
+It is an error if <em>hash-table</em> is empty.
+</p>
+<p>
 <code>(hash-table-clear! </code><em>hash-table</em><code>)</code>
 </p>
 <p>
@@ -625,6 +628,9 @@ and the result of invoking <em>proc</em> are entered into the
 new hash table.  Note that this is <em>not</em> the result of
 lifting mapping over the domain of hash tables, but it is
 considered more useful.
+</p>
+<p>If <em>comparator</em> recognizes multiple keys in the <em>hash-table</em>
+as equivalent, any one of such associations is taken.
 </p>
 <p>
 <code>(hash-table-for-each </code><em>proc hash-table</em><code>)</code>
@@ -733,7 +739,7 @@ for compatibility with SRFI 69, and is deprecated.</small>
 </p>
 <p>
 Deletes the associations from <em>hash-table<sub>1</sub></em>
-which don't also appear in <em>hash-table<sub>2</sub></em> and
+whose keys don't also appear in <em>hash-table<sub>2</sub></em> and
 returns <em>hash-table<sub>1</sub></em>.
 </p>
 <p>
@@ -760,13 +766,12 @@ with SRFI 69,
 and are deprecated.
 </small></p>
 <p>
-<small><code>(hash </code><em>obj</em><code>)</code>
-</small></p>
+<small><code>(hash </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small></p>
 <p><small>
 The same as SRFI 128's <code>default-hash</code> procedure,
 except that it must accept (and should ignore) an optional second argument.
 </small></p>
-<p><small><code>(string-hash </code><em>obj</em><code>)</code></small>
+<p><small><code>(string-hash </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small>
 </p>
 <p><small>
 Similar to SRFI 128's <code>string-hash</code> procedure,
@@ -774,7 +779,7 @@ except that it must accept (and should ignore) an optional second argument.
 It is incompatible with the procedure of the same name exported by SRFI 128
 and <a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
 </small></p>
-<p><small><code>(string-ci-hash </code><em>obj</em><code>)</code></small>
+<p><small><code>(string-ci-hash </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small>
 </p>
 <p><small>
 Similar to SRFI 128's <code>string-ci-hash</code> procedure,
@@ -783,7 +788,7 @@ It is incompatible with the procedure of the same name exported by SRFI 128
 and <a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
 </small></p> 
 <p>
-<small><code>(hash-by-identity </code><em>obj</em><code>)</code></small>
+<small><code>(hash-by-identity </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small>
 </p>
 <p><small>
 The same as SRFI 128's <code>default-hash</code> procedure,
