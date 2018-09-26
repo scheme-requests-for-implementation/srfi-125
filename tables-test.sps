@@ -29,7 +29,7 @@
         (scheme write)
         (scheme process-context) ; for exit
         (srfi 128)
-        (r6rs sorting)
+        (srfi 132)
         (rename (srfi 125)
                 (string-hash    deprecated:string-hash)
                 (string-ci-hash deprecated:string-ci-hash)))
@@ -446,6 +446,15 @@
              (map (lambda (i) (hash-table-ref/default ht-fixnum i -1))
                   '(169 144 121 0 1 4 9 16 25 36 49 64 75 81)))
       '(13 12 11 0 1 2 3 4 5 -1 -1 8 -1 -1))
+
+(let ((ht-eg (hash-table number-comparator 1 1 4 2 9 3 16 4 25 5 64 8)))
+  (test (hash-table-delete! ht-eg)
+        0)
+  (test (hash-table-delete! ht-eg 2 7 2000)
+        0)
+  (test (hash-table-delete! ht-eg 1 2 4 7 64 2000)
+        3)
+  (test-assert (= 3 (length (hash-table-keys ht-eg)))))
 
 (test (map (lambda (i) (hash-table-ref/default ht-fixnum i -1))
            '(169 144 121 0 1 4 9 16 25 36 49 64 81))
