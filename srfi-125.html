@@ -1,6 +1,7 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>SRFI 125: Intermediate hash tables</title>
-    <link rel="stylesheet" href="http://srfi.schemers.org/srfi.css" type="text/css" />
+  <title>SRFI 125: Intermediate hash tables</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/srfi.css" type="text/css" />
   <style>#content > #right > .dose > .dosesingle,
 #content > #center > .dose > .dosesingle
 {display:none !important;}</style></head>
@@ -17,7 +18,7 @@ John Cowan, Will Clinger
 
 <h1>Status</h1>
 
-<p>This SRFI is currently in <em>draft</em> status. Here is <a href="http://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi minus 125 at srfi dotschemers dot org">srfi-125@<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="http://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="http://srfi-email.schemers.org/srfi-125">archive</a>.</p>
+<p>This SRFI is currently in <em>final</em> status. Here is <a href="http://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi minus 125 at srfi dotschemers dot org">srfi-125@<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="http://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="http://srfi-email.schemers.org/srfi-125">archive</a>.</p>
 <ul>
 <li>Received: 2015/9/7</li>
 <li>Draft #1 published: 2015/9/7</li>
@@ -29,7 +30,11 @@ John Cowan, Will Clinger
 <li>Draft #7 published: 2016/5/3</li>
 <li>Draft #8 published: 2016/5/6</li>
 <li>Draft #9 published: 2016/5/7</li>
-<li>Draft #10 published: 2016/5/17</li></ul>
+<li>Draft #10 published: 2016/5/17</li>
+<li>Draft #11 published: 2016/5/18</li>
+<li>Draft #12 published: 2016/5/19</li>
+<li>Finalized: 2015/5/28</li>
+<li>Revised for clarity:<ul><li>2017/9/12 (Clarify, esp. behavior of pop on empty table.)</li></ul></li></ul>
 
 <h1>Abstract</h1>
 
@@ -169,7 +174,7 @@ version of <code>table-search</code> in
 </li></ul><ul><li>The procedures <code>hash-table=?</code> and
 <code>hash-table-map</code> were suggested by
 <a href="http://hackage.haskell.org/packages/archive/containers/0.5.2.1/doc/html/Data-Map-Strict.html">Haskell's Data.Map.Strict module</a>.
-</li></ul><ul><li>The procedure <code>hash-table-map->list</code> is from
+</li></ul><ul><li>The procedure <code>hash-table-map-&gt;list</code> is from
 <a href="http://www.gnu.org/software/guile/manual/html_node/Hash-Table-Reference.html">Guile</a>.
 </li></ul><p>
 The procedures <code>hash-table-empty?</code>,
@@ -197,17 +202,6 @@ were also investigated, but no additional procedures were incorporated.
 <p>
 The slash in the names of some procedures can be pronounced "with".
 </p>
-<h3 id="Acknowledgements">Acknowledgements</h3>
-<p>
-Some of the language of this SRFI is copied from SRFI 69 with thanks
-to its author, Panu Kalliokoski.  However, he is not responsible for
-what I have done with it.  Thanks to Will Clinger for providing the
-sample implementation, and to Taylan Ulrich Bayırlı/Kammer for his
-spirited review.
-</p>
-<p>I also acknowledge the members of the SRFI 125, 126, and 128 mailing lists,
-especially Takashi Kato, Alex Shinn, Shiro Kawai, and Per Bothner.
-
 <h1>Specification</h1>
 
 <p>
@@ -229,7 +223,7 @@ operation: it may be called zero, one, or more times.
 It is an error if the procedure argument of <code>hash-table-find</code>,
 <code>hash-table-count</code>, <code>hash-table-map</code>,
 <code>hash-table-for-each</code>, <code>hash-table-map!</code>,
-<code>hash-table-map->list</code>, <code>hash-table-fold</code>
+<code>hash-table-map-&gt;list</code>, <code>hash-table-fold</code>
 or <code>hash-table-prune!</code> mutates the hash table being walked.
 </p>
 <p>
@@ -253,12 +247,6 @@ with suitable warnings against inappropriate uses.</p>
 <p>It is an error to mutate a key during or after its insertion
 into a hash table in such a way that the hash function of the
 table will return a different result when applied to that key.
-In combination with the previous rule, this means that mutating
-a key in a hash table based on <code>eq-comparator</code> or
-<code>eqv-comparator</code>, or the equality predicates
-<code>eq?</code> or <code>eqv?</code>, may be possible,
-but mutating a key in a hash table based on <code>equal-comparator</code>
-or <code>equal?</code> is almost always unsafe.
 </p>
 <h3 id="Index">Index</h3>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Constructors">Constructors</a>:
@@ -289,7 +277,7 @@ or <code>equal?</code> is almost always unsafe.
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mappingandfolding">Mapping and folding</a>:
 <code>hash-table-map</code>, <code>hash-table-for-each</code>,
 <code>hash-table-walk</code> (deprecated),
-<code>hash-table-map!</code>, <code>hash-table-map->list</code>,
+<code>hash-table-map!</code>, <code>hash-table-map-&gt;list</code>,
 <code>hash-table-fold</code>, <code>hash-table-prune!</code>
 </li></ul>
 <ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Copyingandconversion">Copying and conversion</a>:
@@ -329,7 +317,7 @@ implementation-dependent hash function instead of the
 specified hash function, provided that the specified equality predicate
 is a refinement of the <code>equal?</code> predicate.
 This applies whether the hash function and equality predicate are passed
-as separate arguments or packaged up into a constructor.
+as separate arguments or packaged up into a comparator.
 </p>
 <p>
 If an equality predicate rather than a comparator is provided,
@@ -375,7 +363,7 @@ If the same key (in the sense of the equality predicate) is
 specified more than once, it is an error.
 </p>
 <p>
-<code>(hash-table-unfold </code><em>stop? mapper successor seed comparator arg</em> ... ]<code>)</code>
+<code>(hash-table-unfold </code><em>stop? mapper successor seed comparator arg</em> ... <code>)</code>
 </p>
 <p>
 Create a new hash table as if by <code>make-hash-table</code> using
@@ -562,6 +550,9 @@ Chooses an arbitrary association from <em>hash-table</em> and removes
 it, returning the key and value as two values.
 </p>
 <p>
+It is an error if <em>hash-table</em> is empty.
+</p>
+<p>
 <code>(hash-table-clear! </code><em>hash-table</em><code>)</code>
 </p>
 <p>
@@ -639,6 +630,9 @@ new hash table.  Note that this is <em>not</em> the result of
 lifting mapping over the domain of hash tables, but it is
 considered more useful.
 </p>
+<p>If <em>comparator</em> recognizes multiple keys in the <em>hash-table</em>
+as equivalent, any one of such associations is taken.
+</p>
 <p>
 <code>(hash-table-for-each </code><em>proc hash-table</em><code>)</code>
 </p>
@@ -664,7 +658,7 @@ the association.  The value returned by <em>proc</em> is used to
 update the value of the association.   Returns an unspecified value.
 </p>
 <p>
-<code>(hash-table-map->list </code><em>proc hash-table</em><code>)</code>
+<code>(hash-table-map-&gt;list </code><em>proc hash-table</em><code>)</code>
 </p>
 <p>
 Calls <em>proc</em> for every association in <em>hash-table</em>
@@ -746,7 +740,7 @@ for compatibility with SRFI 69, and is deprecated.</small>
 </p>
 <p>
 Deletes the associations from <em>hash-table<sub>1</sub></em>
-which don't also appear in <em>hash-table<sub>2</sub></em> and
+whose keys don't also appear in <em>hash-table<sub>2</sub></em> and
 returns <em>hash-table<sub>1</sub></em>.
 </p>
 <p>
@@ -773,30 +767,29 @@ with SRFI 69,
 and are deprecated.
 </small></p>
 <p>
-<small><code>(hash </code><em>obj</em><code>)</code>
-</small></p>
+<small><code>(hash </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small></p>
 <p><small>
 The same as SRFI 128's <code>default-hash</code> procedure,
 except that it must accept (and should ignore) an optional second argument.
 </small></p>
-<p><small><code>(string-hash </code><em>obj</em><code>)</code></small>
+<p><small><code>(string-hash </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small>
 </p>
 <p><small>
 Similar to SRFI 128's <code>string-hash</code> procedure,
 except that it must accept (and should ignore) an optional second argument.
 It is incompatible with the procedure of the same name exported by SRFI 128
-and <http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
+and <a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
 </small></p>
-<p><small><code>(string-ci-hash </code><em>obj</em><code>)</code></small>
+<p><small><code>(string-ci-hash </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small>
 </p>
 <p><small>
 Similar to SRFI 128's <code>string-ci-hash</code> procedure,
 except that it must accept (and should ignore) an optional second argument.
 It is incompatible with the procedure of the same name exported by SRFI 128
-and <http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
+and <a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
 </small></p> 
 <p>
-<small><code>(hash-by-identity </code><em>obj</em><code>)</code></small>
+<small><code>(hash-by-identity </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small>
 </p>
 <p><small>
 The same as SRFI 128's <code>default-hash</code> procedure,
@@ -866,6 +859,17 @@ Guile hash table, an equality predicate, and a hash function,
 which means they could not interoperate directly with native
 Guile hash tables.
 </p>
+
+<h1 id="Acknowledgements">Acknowledgements</h1>
+<p>
+  Some of the language of this SRFI is copied from SRFI 69 with thanks
+  to its author, Panu Kalliokoski.  However, he is not responsible for
+  what I have done with it.  Thanks to Will Clinger for providing the
+  sample implementation, and to Taylan Ulrich Bayırlı/Kammer for his
+  spirited review.
+</p>
+<p>I also acknowledge the members of the SRFI 125, 126, and 128 mailing lists,
+  especially Takashi Kato, Alex Shinn, Shiro Kawai, and Per Bothner.
 
 <h1>Copyright</h1>
 Copyright (C) John Cowan (2015).
