@@ -242,14 +242,18 @@
          (error "make-hash-table: unable to infer hash function"
                 equiv))))
 
-;;; FIXME: assumes hash-table-set! goes right to left.
-
 (define (hash-table comparator . rest)
   (let ((ht (apply make-hash-table comparator rest)))
-    (apply hash-table-set!
-           ht
-           rest)
-    ht))
+    (let loop ((kvs rest))
+      (cond
+       ((null? kvs) #f)
+       ((null? (cdr kvs)) (error "hash-table: wrong number of arguments"))
+       ((hashtable-contains? ht (car kvs))
+        (error "hash-table: two equivalent keys were provided"
+               (car kvs)))
+       (else (hashtable-set! ht (car kvs) (cadr kvs))
+             (loop (cddr kvs)))))
+    (hashtable-copy ht #f)))
 
 (define (hash-table-unfold stop? mapper successor seed comparator . rest)
   (let ((ht (apply make-hash-table comparator rest)))
@@ -329,21 +333,20 @@
 (define (hash-table-set! ht . rest)
   (if (= 2 (length rest))
       (hashtable-set! ht (car rest) (cadr rest))
-      (let ((revrest (reverse rest)))
-        (let loop ((revrest revrest))
-          (cond ((and (not (null? revrest))
-                      (not (null? (cdr revrest))))
-                 (hashtable-set! ht (cadr revrest) (car revrest))
-                 (loop (cddr revrest)))
-                ((not (null? revrest))
-                 (error "hash-table-set!: wrong number of arguments"
-                        (cons ht rest))))))))
+      (let loop ((kvs rest))
+        (cond ((and (not (null? kvs))
+                    (not (null? (cdr kvs))))
+               (hashtable-set! ht (car kvs) (cadr kvs))
+               (loop (cddr kvs)))
+              ((not (null? kvs))
+               (error "hash-table-set!: wrong number of arguments"
+                      (cons ht rest)))))))
 
 (define (hash-table-delete! ht . keys)
   (let loop ((keys keys) (cnt 0))
     (cond ((null? keys) cnt)
 	  ((hash-table-contains? ht (car keys))
-	   (hash-table-delete! ht (car keys))
+	   (hashtable-delete! ht (car keys))
 	   (loop (cdr keys) (+ cnt 1)))
 	  (else
 	   (loop (cdr keys) cnt)))))
@@ -488,9 +491,7 @@
 (define (hash-table-empty-copy ht)
   (let* ((ht2 (hashtable-copy ht #t))
          (ignored (hashtable-clear! ht2)))
-    (if (hashtable-mutable? ht)
-        ht2
-        (hashtable-copy ht2))))
+     ht2))
 
 (define (hash-table->alist ht)
   (call-with-values

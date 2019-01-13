@@ -27,9 +27,9 @@
 (import (scheme base)
         (scheme char)
         (scheme write)
-        (scheme process-context) ; for exit
-        (srfi 128)
-        (srfi 132)
+        (only (scheme process-context) exit)
+        (scheme comparator)            ; was (srfi 128)
+        (only (scheme sort) list-sort) ; was (r6rs sorting)
         (rename (srfi 125)
                 (string-hash    deprecated:string-hash)
                 (string-ci-hash deprecated:string-ci-hash)))
@@ -238,7 +238,7 @@
       '(#f #f #t #t #t #t #f #f #f #f #f #f #f #f #f #f))
 
 (test (map hash-table-mutable? test-tables)
-      '(#t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #f))
+      '(#t #f #t #t #t #t #t #t #t #t #t #t #t #t #t #f))
 
 ;;; FIXME: glass-box
 
@@ -828,6 +828,78 @@
         (81 . 9)
         (121 . -11)
         (144 . -12)))
+
+;;; Bugs reported on 5 January 2019 by Jéssica Milaré
+;;; ( https://srfi-email.schemers.org/srfi-125/msg/10177551 )
+
+;;; Spec says hash-table returns an immutable hash table (if that
+;;; is supported) and signal an error if there are duplicate keys,
+;;; but standard implementation returns a mutable hash table and
+;;; signals no error with duplicate keys.
+;;;
+;;; Comment by Will Clinger: the spec says specifying a duplicate
+;;; key "is an error", so hash-table is not required to signal an
+;;; error when there are duplicate keys.  That part of the spec
+;;; was added on 8 May 2016, which is why it was not implemented
+;;; by the sample implementation of 2 May 2016.  Because a duplicate
+;;; key "is an error" rather than "signals an error", testing for
+;;; that situation is glass-box, as is testing for immutability.
+
+;;; FIXME: glass-box
+
+(test (hash-table-mutable?
+       (hash-table number-comparator
+                   .25 .5 64 9999 81 9998 121 -11 144 -12))
+      #f)
+
+;;; FIXME: glass-box (implementations not required to raise an exception here)
+
+(test (guard (exn
+              (else 'eh))
+       (hash-table number-comparator .25 .5 .25 -.5))
+      'eh)
+
+;;; Spec says hash-table-set! must go left to right, but in
+;;; standard implementation it goes right to left.
+;;;
+;;; Comment by Will Clinger: the left-to-right requirement was
+;;; added to the spec on 8 May 2016, which is why it was not
+;;; implemented by the sample implementation of 2 May 2016.
+
+(test (let* ((ht (hash-table-empty-copy ht-eq))
+             (ignored (hash-table-set! ht 'foo 13 'bar 14 'foo 18)))
+        (hash-table-ref ht 'foo))
+      18)
+
+;;; Spec says hash-table-empty-copy returns a mutable hash table,
+;;; but in standard implementation it returns an immutable hash
+;;; table if the given hash table is immutable.
+
+;;; FIXME: glass-box (immutable tables need not be supported)
+
+(test (hash-table-mutable?
+       (hash-table number-comparator))
+      #f)
+
+(test (hash-table-mutable?
+       (hash-table-empty-copy
+        (hash-table-copy (hash-table number-comparator) #f)))
+      #t)
+
+;;; hash-table-delete! seems to loop infinitely once it finds a key.
+;;;
+;;; Comment by Will Clinger: that bug was added by
+;;; commit e17c15203a934ab741300e59619f880f363c2b2f
+;;; on 26 September 2018.  I do not understand the purpose of that
+;;; commit, as its one change appears to have had no substantive
+;;; effect apart from inserting this bug.
+
+(test (let* ((ht
+              (hash-table default-comparator 'foo 1 'bar 2 'baz 3))
+             (ht (hash-table-copy ht #t)))
+        (hash-table-delete! ht 'foo)
+        (hash-table-size ht))
+      2)
 
 (displayln "Done.")
 
