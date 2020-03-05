@@ -18,7 +18,7 @@ John Cowan, Will Clinger
 
 <h1>Status</h1>
 
-<p>This SRFI is currently in <em>final</em> status. Here is <a href="http://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi minus 125 at srfi dotschemers dot org">srfi-125@<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="http://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="http://srfi-email.schemers.org/srfi-125">archive</a>.</p>
+<p>This SRFI is currently in <em>final</em> status. Here is <a href="https://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi minus 125 at srfi dotschemers dot org">srfi-125@<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="http://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="https://srfi-email.schemers.org/srfi-125">archive</a>.</p>
 <ul>
 <li>Received: 2015-09-07</li>
 <li>Draft #1 published: 2015-09-07</li>
@@ -77,7 +77,7 @@ data structure.  Therefore, what needs to be defended is not
 the data structure but the procedures.  This SRFI is at an
 intermediate level.  It supports a great many convenience
 procedures on top of the basic hash table interfaces provided
-by <a href="http://srfi.schemers.org/srfi-69/srfi-69.html">SRFI 69</a>
+by <a href="https://srfi.schemers.org/srfi-69/srfi-69.html">SRFI 69</a>
 and
 <a href="http://www.r6rs.org/final/html/r6rs-lib/r6rs-lib-Z-H-14.html">R6RS</a>.
 Nothing in it adds power to what those interfaces provide, but
@@ -92,7 +92,7 @@ or weakness, though there are portable hooks for specifying these features.
 <p>
 This specification accepts separate equality predicates and hash
 functions for backward compatibility, but strongly encourages the use of
-<a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>
+<a href="https://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>
 comparators, which package a type test, an equality predicate, and a
 hash function into a single bundle.
 </p>
@@ -170,7 +170,7 @@ version of <code>table-search</code> in
 <a href="http://www.iro.umontreal.ca/~gambit/doc/gambit-c.html#Tables">Gambit</a>.
 </li></ul><ul><li>The procedures <code>hash-table-unfold</code> and
 <code>hash-table-count</code> were suggested by
-<a href="http://srfi.schemers.org/srfi-1/srfi-1.html">SRFI 1</a>.  
+<a href="https://srfi.schemers.org/srfi-1/srfi-1.html">SRFI 1</a>.  
 </li></ul><ul><li>The procedures <code>hash-table=?</code> and
 <code>hash-table-map</code> were suggested by
 <a href="http://hackage.haskell.org/packages/archive/containers/0.5.2.1/doc/html/Data-Map-Strict.html">Haskell's Data.Map.Strict module</a>.
@@ -249,48 +249,48 @@ into a hash table in such a way that the hash function of the
 table will return a different result when applied to that key.
 </p>
 <h3 id="Index">Index</h3>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Constructors">Constructors</a>:
+<ul><li><a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Constructors">Constructors</a>:
 <code>make-hash-table</code>, <code>hash-table</code>,
 <code>hash-table-unfold</code>, <code>alist-&gt;hash-table</code>
 </li></ul>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Predicates">Predicates</a>:
+<ul><li><a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Predicates">Predicates</a>:
 <code>hash-table?</code>, <code>hash-table-contains?</code>,
 <code>hash-table-exists?</code> (deprecated),
 <code>hash-table-empty?</code>, <code>hash-table=?</code>,
 <code>hash-table-mutable?</code>
 </li></ul>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Accessors">Accessors</a>:
+<ul><li><a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Accessors">Accessors</a>:
 <code>hash-table-ref</code>, <code>hash-table-ref/default</code>
 </li></ul>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mutators">Mutators</a>:
+<ul><li><a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Mutators">Mutators</a>:
 <code>hash-table-set!</code>,
 <code>hash-table-delete!</code>,
 <code>hash-table-intern!</code>, <code>hash-table-update!</code>,
 <code>hash-table-update!/default</code>,
 <code>hash-table-pop!</code>, <code>hash-table-clear!</code>
 </li></ul>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Thewholehashtable">The whole hash table</a>:
+<ul><li><a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Thewholehashtable">The whole hash table</a>:
 <code>hash-table-size</code>, <code>hash-table-keys</code>,
 <code>hash-table-values</code>, <code>hash-table-entries</code>,
 <code>hash-table-find</code>, <code>hash-table-count</code>
 </li></ul>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Mappingandfolding">Mapping and folding</a>:
+<ul><li><a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Mappingandfolding">Mapping and folding</a>:
 <code>hash-table-map</code>, <code>hash-table-for-each</code>,
 <code>hash-table-walk</code> (deprecated),
 <code>hash-table-map!</code>, <code>hash-table-map-&gt;list</code>,
 <code>hash-table-fold</code>, <code>hash-table-prune!</code>
 </li></ul>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Copyingandconversion">Copying and conversion</a>:
+<ul><li><a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Copyingandconversion">Copying and conversion</a>:
 <code>hash-table-copy</code>, <code>hash-table-empty-copy</code>,
 <code>hash-table-&gt;alist</code>
 </li></ul>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashtablesassets">Hash tables as sets</a>:
+<ul><li><a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Hashtablesassets">Hash tables as sets</a>:
 <code>hash-table-union!</code>,
 <code>hash-table-merge!</code> (deprecated),
 <code>hash-table-intersection!</code>,
 <code>hash-table-difference!</code>, <code>hash-table-xor!</code>
 </li></ul>
-<ul><li><a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Hashfunctionsandreflectivity">Hash functions and reflectivity</a> (deprecated):
+<ul><li><a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Hashfunctionsandreflectivity">Hash functions and reflectivity</a> (deprecated):
 <code>hash</code>, <code>string-hash</code>, <code>string-ci-hash</code>,
 <code>hash-by-identity</code>, <code>hash-table-equivalence-function</code>,
 <code>hash-table-hash-function</code>
@@ -328,7 +328,7 @@ for use with the predicates <code>eq?</code>, <code>eqv?</code>,
 and may extend this list.  But if any unknown equality predicate is
 provided without a hash function, an error should be signaled.
 The constraints on equality predicates and hash functions are given in
-<a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>.
+<a href="https://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>.
 </p>
 <p>
 The meaning of any further arguments is implementation-dependent.
@@ -778,7 +778,7 @@ except that it must accept (and should ignore) an optional second argument.
 Similar to SRFI 128's <code>string-hash</code> procedure,
 except that it must accept (and should ignore) an optional second argument.
 It is incompatible with the procedure of the same name exported by SRFI 128
-and <a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
+and <a href="https://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
 </small></p>
 <p><small><code>(string-ci-hash </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small>
 </p>
@@ -786,7 +786,7 @@ and <a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
 Similar to SRFI 128's <code>string-ci-hash</code> procedure,
 except that it must accept (and should ignore) an optional second argument.
 It is incompatible with the procedure of the same name exported by SRFI 128
-and <a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
+and <a href="https://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>.
 </small></p> 
 <p>
 <small><code>(hash-by-identity </code><em>obj</em><code> [ </code><em>arg</em><code> ] )</code></small>
@@ -818,9 +818,9 @@ implementation may return <code>#f</code> instead.
 <p>
 The current sample implementation is in the code repository of this
 SRFI.  It relies upon
-<a href="http://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>
+<a href="https://srfi.schemers.org/srfi-126/srfi-126.html">SRFI 126</a>
 and
-<a href="http://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>,
+<a href="https://srfi.schemers.org/srfi-128/srfi-128.html">SRFI 128</a>,
 but the sample implementation for SRFI 126
 is easily layered over any hash table implementation that
 supports either SRFI 69 or R6RS.
@@ -832,7 +832,7 @@ arguments.
 <p>
 The original intention was to make it possible to implement this SRFI
 on top of all the native hash table systems mentioned in
-<a class="wiki" href="http://srfi.schemers.org/srfi-125/srfi-125.html#Sources">Sources</a>
+<a class="wiki" href="https://srfi.schemers.org/srfi-125/srfi-125.html#Sources">Sources</a>
 above as well.  However, this turned out not to be practical for the
 following reasons:
 </p>
