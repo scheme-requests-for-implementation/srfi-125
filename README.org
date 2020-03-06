@@ -1,6 +1,8 @@
 * SRFI 125: Intermediate hash tables
 
-** by John Cowan, Will Clinger
+** by John Cowan and Will Clinger
+
+
 
 This repository hosts [[https://srfi.schemers.org/srfi-125/][SRFI 125]]: Intermediate hash tables, a [[https://srfi.schemers.org/][Scheme Request for Implementation]].
 
