@@ -30,6 +30,7 @@
         (only (scheme process-context) exit)
         (scheme comparator)            ; was (srfi 128)
         (only (scheme sort) list-sort) ; was (r6rs sorting)
+        (only (srfi 126) hashtable-copy)
         (rename (srfi 125)
                 (string-hash    deprecated:string-hash)
                 (string-ci-hash deprecated:string-ci-hash)))
@@ -447,7 +448,9 @@
                   '(169 144 121 0 1 4 9 16 25 36 49 64 75 81)))
       '(13 12 11 0 1 2 3 4 5 -1 -1 8 -1 -1))
 
-(let ((ht-eg (hash-table number-comparator 1 1 4 2 9 3 16 4 25 5 64 8)))
+(let ((ht-eg (hashtable-copy (hash-table number-comparator
+                                         1 1 4 2 9 3 16 4 25 5 64 8)
+                             #t)))
   (test (hash-table-delete! ht-eg)
         0)
   (test (hash-table-delete! ht-eg 2 7 2000)
