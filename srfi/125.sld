@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2015 William D Clinger <will@ccs.neu.edu>
+;;;
+;;; SPDX-License-Identifier: LicenseRef-Clinger
+
 (define-library (srfi 125)
 
   (export
