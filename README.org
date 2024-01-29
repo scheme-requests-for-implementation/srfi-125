@@ -1,5 +1,5 @@
 
-# SPDX-FileCopyrightText: 2024 John Cowan and Will Clinger
+# SPDX-FileCopyrightText: 2024 Arthur A. Gleckler
 # SPDX-License-Identifier: MIT
 * SRFI 125: Intermediate hash tables
 
