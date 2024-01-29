@@ -1,10 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
 <!--
 SPDX-FileCopyrightText: 2015 John Cowan
 
 SPDX-License-Identifier: MIT
 -->
-
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title>SRFI 125: Intermediate hash tables</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/srfi.css" type="text/css" />
@@ -24,7 +26,7 @@ John Cowan, Will Clinger
 
 <h1>Status</h1>
 
-<p>This SRFI is currently in <em>final</em> status. Here is <a href="https://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi minus 125 at srfi dotschemers dot org">srfi-125@<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="http://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="https://srfi-email.schemers.org/srfi-125">archive</a>.</p>
+<p>This SRFI is currently in <em>final</em> status. Here is <a href="https://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi+minus+125+at+srfi+dotschemers+dot+org">srfi-125@<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="http://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="https://srfi-email.schemers.org/srfi-125">archive</a>.</p>
 <ul>
 <li>Received: 2015-09-07</li>
 <li>Draft #1 published: 2015-09-07</li>
@@ -302,7 +304,6 @@ table will return a different result when applied to that key.
 <code>hash-table-hash-function</code>
 
 </li></ul>
-</p>
 
 <h3 id="Constructors">Constructors</h3>
 <p>
@@ -406,9 +407,8 @@ Common Lisp <code>hash-table-p</code>)
 <p>
 <code>(hash-table-contains? </code><em>hash-table key</em><code>)</code>
 </p>
-<small><p>
+<p><small>
 <code>(hash-table-exists? </code><em>hash-table key</em><code>)</code>
-</p>
 </small><p>
 Returns <code>#t</code> if there is any association to <em>key</em>
 in <em>hash-table</em>, and <code>#f</code> otherwise.  Must execute
@@ -899,7 +899,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
     </p><hr />
-    <address>Editor: <a href="mailto:srfi-editors at srfi dot schemers dot org">Arthur A. Gleckler</a></address>
+    <address>Editor: <a href="mailto:srfi-editors+at+srfi+dot+schemers+dot+org">Arthur A. Gleckler</a></address>
 <!--Created: Tue Sep 29 19:20:08 EDT 1998 -->
 <!--hhmts start -->
 Last modified: Sat, May 7, 2016  9:57:02 PM
