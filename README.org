@@ -1,7 +1,6 @@
-# SPDX-FileCopyrightText: 2015 John Cowan
-#
-# SPDX-License-Identifier: MIT
 
+# SPDX-FileCopyrightText: 2024 John Cowan and Will Clinger
+# SPDX-License-Identifier: MIT
 * SRFI 125: Intermediate hash tables
 
 ** by John Cowan and Will Clinger
